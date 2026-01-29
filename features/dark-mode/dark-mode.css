@@ -1,0 +1,59 @@
+/* ===== Dark Mode Base ===== */
+
+html.dark-mode {
+    background-color: #0f0f0f;
+    color: #e5e5e5;
+}
+
+html.dark-mode body {
+    background-color: #0f0f0f;
+    color: #e5e5e5;
+}
+
+/* Typography */
+html.dark-mode a {
+    color: #8ab4f8;
+}
+
+html.dark-mode a:hover {
+    color: #a8c7ff;
+}
+
+/* Article / content */
+html.dark-mode article,
+html.dark-mode .entry-content {
+    background: transparent;
+}
+
+/* Code block (technical blog friendly) */
+html.dark-mode pre,
+html.dark-mode code {
+    background: #1e1e1e;
+    color: #dcdcdc;
+}
+
+/* ===== Toggle Button ===== */
+
+#dark-mode-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+
+    cursor: pointer;
+    font-size: 16px;
+
+    background: #1f1f1f;
+    color: #fff;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+html.dark-mode #dark-mode-toggle {
+    background: #e5e5e5;
+    color: #000;
+}
