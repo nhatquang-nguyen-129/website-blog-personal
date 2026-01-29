@@ -1,0 +1,73 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+*.swp
+*.swo
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+.env
+.env.*
+*.key
+*.pem
+*.crt
+
+
+*.log
+tmp/
+temp/
+
+*.sql
+*.sqlite
+*.db
+
+backup/
+dump/
+
+
+/public/wp-admin/
+/public/wp-includes/
+/public/wp-config.php
+/public/wp-config-*.php
+/public/index.php
+
+
+# Uploads (media)
+ /public/wp-content/uploads/
+
+# Cache / security / backup plugins
+/public/wp-content/cache/
+/public/wp-content/wflogs/
+/public/wp-content/ai1wm-backups/
+/public/wp-content/upgrade/
+/public/wp-content/backups/
+
+/public/wp-content/themes/*
+/public/wp-content/plugins/*
+
+# Custom themes
+!/public/wp-content/themes/my-theme/
+!/public/wp-content/themes/generatepress-child/
+
+# Custom plugins
+!/public/wp-content/plugins/my-plugin/
+!/public/wp-content/plugins/custom-*
+
+!/seed/
+!/scripts/
+!/content/
+
+# Apache / Nginx (chỉ commit nếu bạn tự quản lý)
+.htaccess
+.htaccess.*
