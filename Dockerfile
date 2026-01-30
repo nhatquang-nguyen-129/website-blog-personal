@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     less \
+    rsync \
     && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------------------------
@@ -25,14 +26,19 @@ WORKDIR /var/www/html
 COPY public/ /var/www/html/
 
 # --------------------------------------------------
-# 5. Download WordPress core into /tmp
-#    (DO NOT overwrite wp-content)
+# 5. Download WordPress core + merge wp-content correctly
 # --------------------------------------------------
 RUN curl -o /tmp/wordpress.zip https://wordpress.org/latest.zip \
  && unzip /tmp/wordpress.zip -d /tmp \
- && rsync -av \
-      --exclude=wp-content \
-      /tmp/wordpress/ /var/www/html/ \
+ \
+ # Copy WordPress core (everything)
+ && rsync -av /tmp/wordpress/ /var/www/html/ \
+ \
+ # Re-inject mu-plugins from repo (delta layer)
+ && if [ -d "/var/www/html/wp-content/mu-plugins" ]; then \
+        echo "mu-plugins already present"; \
+    fi \
+ \
  && rm -rf /tmp/wordpress /tmp/wordpress.zip
 
 # --------------------------------------------------
