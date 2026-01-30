@@ -1,3 +1,5 @@
+# WordPress Setup on Windows with CLI-first
+
 ## Chuyển Terminal về Public Folder
 ```bash
 cd public`

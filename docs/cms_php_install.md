@@ -1,4 +1,4 @@
-# WordPress Setup on Windows with CLI-first
+# PHP Setup on Windows with CLI-first
 
 This document describes how to set up **PHP** on Windows with a focus on:
 
