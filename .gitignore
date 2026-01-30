@@ -1,14 +1,11 @@
-# =====================
-# OS / IDE
-# =====================
+# OS/IDE
 .DS_Store
 .idea/
 .vscode/
 *.log
 
-# =====================
-# WordPress core (generic)
-# =====================
+# WordPress generic core
+public/wordpress.zip
 public/wp-admin/
 public/wp-includes/
 public/index.php
@@ -17,17 +14,21 @@ public/wp-*.php
 public/license.txt
 public/readme.html
 
-# =====================
-# WP config (env-based)
-# =====================
+# WordPress config
 public/wp-config.php
 
-# =====================
-# Uploads & runtime
-# =====================
+# WordPress runtime
 public/wp-content/uploads/
 public/wp-content/cache/
 public/wp-content/debug.log
+
+# =====================
+# WordPress content (default ignore)
+# =====================
+public/wp-content/*
+
+# Allow custom WordPress mu-plugins
+!public/wp-content/mu-plugins/
 
 # =====================
 # Node / Composer (if any)
