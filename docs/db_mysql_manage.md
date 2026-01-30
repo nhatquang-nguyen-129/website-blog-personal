@@ -1,11 +1,14 @@
 # Login vào MySQL trên Windows PowerShell
 ```bash
-mysql -u root -p`
+mysql -u root -p
+```
 
 # Kiểm tra danh sách Database
 ```bash
-SHOW DATABASES;`
+SHOW DATABASES;
+```
 
 # Xóa Database cũ
 ```bash
-DROP DATABASE put_your_former_database_name;`
+DROP DATABASE put_your_former_database_name;
+```
