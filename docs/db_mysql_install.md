@@ -1,105 +1,76 @@
+# MySQL Setup on Windows with CLI-first
 
+This document describes how to set up **MySQL** on Windows with a focus on:
 
-### 3. Install MySQL
-3.1 Download MySQL Server
+- Lightweight installation
+- Minimal GUI usage
+- Suitable for WordPress custom feature
 
-Download MySQL Community Server 8.0 (x64)
-→ Choose MySQL Installer for Windows (.msi)
+---
 
-⚠️ Do NOT choose:
+### 1. Install MySQL
 
-Innovation
+### 1.1 Download MySQL Server
 
-8.4
+- Download `MySQL Community Server 8.0 (x64)` then choose `MySQL Installer for Windows (.msi)` in:
+`https://dev.mysql.com/downloads/mysql/8.0.html`
 
-HeatWave
+- Run MySQL Installer and install `Server` only because no need for MySQL Workbench (GUI)
 
-3.2 Run MySQL Installer
+### 1.2. MySQL configuration
 
-When the installer starts:
+- Change Windows PowerShell path to MySQL bin folder:
+```bash
+cd "C:\MySQL\MySQL Server 8.0\bin"
+```
 
-Installation type:
+- Initialize folder data
+```bash
+.\mysqld --initialize-insecure --datadir="C:\MySQL\MySQL Server 8.0\data"
+```
 
-👉 Server only
+- Install MySQL Server 8.0:
+```bash
+.\mysqld --install MySQL80
+```
 
-Why:
+- Initialize MySQL80Service:
+```bash
+net start MySQL80
+```
 
-No need for MySQL Workbench (GUI)
-
-CLI-first workflow
-
-Lightweight, fewer conflicts
-
-3.3 Configure MySQL Server
-
-Port: 3306
-
-Authentication: Use Strong Password Encryption
-
-Set a password for user root
-
-4. MySQL Login & Configuration
-4.1 Login to MySQL from PowerShell
+- Login to MySQL from Windows PowerShell
+```bash
 mysql -u root -p
+```
 
-
-Enter the password you set during installation.
-
-4.2 Change authentication method (if needed)
-ALTER USER 'root'@'localhost'
+- Create MySQL account with user `admin` and password `admin`:
+```bash
+CREATE USER 'admin'@'localhost'
 IDENTIFIED WITH mysql_native_password
-BY 'root1234!';
+BY 'admin';
+```
 
-
-Apply changes:
-
+- Set local developer permission:
+```bash
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+```
 
-4.3 Verify login again
+- Login to MySQL database with registered account:
+```bash
+cd "C:\MySQL\MySQL Server 8.0\bin"
+.\mysql -u admin -p
+```
 
-Exit MySQL:
-
-EXIT;
-
-
-Login again:
-
-mysql -u root -p
-
-5. Create WordPress Database
-CREATE DATABASE wp_local
+- Create MySQL database for personal blog website:
+```bash
+# Create MySQL database
+CREATE DATABASE blog
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
-
-
-Verify:
-
+# Check existing database
 SHOW DATABASES;
-
-6. Important Notes
-
-WordPress only needs one initial DB setup
-
-Default theme (e.g. twentytwentyfive) is stored in wp_options
-
-Changing themes later is done via WP Admin, not manual DB edits
-
-If you see admin redirects or missing theme errors → drop DB and re-init
-
-7. Recommended Workflow
-
-PHP + MySQL: manual, stable installation
-
-WordPress core: clean, untouched
-
-Custom logic: features/ + mu-plugins/bootstrap.php
-
-When things break strangely: reset DB > debug
-
-
-If you want, next I can:
-
-- Add **WordPress core install & `wp-config.php` doc**
-- Add **1-command DB reset doc**
-- Write **repo structure guidelines (WP + features)**
-- Turn this into a **team onboarding README**
+# Exit MySQL
+exit
+```
