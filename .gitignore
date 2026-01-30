@@ -22,21 +22,13 @@ public/wp-content/uploads/
 public/wp-content/cache/
 public/wp-content/debug.log
 
-# =====================
-# WordPress content (default ignore)
-# =====================
+# WordPress content exclude mu-plugins
 public/wp-content/*
-
-# Allow custom WordPress mu-plugins
 !public/wp-content/mu-plugins/
 
-# =====================
-# Node / Composer (if any)
-# =====================
+# Nodes
 node_modules/
 vendor/
 
-# =====================
-# Docker runtime
-# =====================
+# Docker
 docker/.env
