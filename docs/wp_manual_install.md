@@ -22,7 +22,17 @@ cd public
 curl -o wordpress.zip https://wordpress.org/latest.zip
 ```
 
-### 1.2. Relocate to source code folder
+### 1.2. Relocate to source code folder without overriding custom plugins
+
+Why this step exists:
+
+- WordPress ships with its own wp-content
+
+- Your repo already has wp-content/mu-plugins
+
+- Blindly moving files will overwrite your custom code
+
+So we copy only core files, not wp-content.
 
 - Unzip downloaded WordPress folder
 ```bash
@@ -31,10 +41,26 @@ tar -xf wordpress.zip
 
 - Relocate unzipped WordPress to root folder
 ```bash
-Move-Item wordpress\* .
+Move-Item wordpress\wp-admin .
+Move-Item wordpress\wp-includes .
+Move-Item wordpress\*.php .
+```
+
+- Cleanup:
+```bash
 Remove-Item wordpress -Recurse
 Remove-Item wordpress.zip
 ```
+
+At this point, structure should be:
+public/
+├── wp-admin/
+├── wp-includes/
+├── wp-content/
+│   └── mu-plugins/
+├── index.php
+├── wp-load.php
+└── ...
 
 ## 2. Config WordPress
 
@@ -67,3 +93,4 @@ define('WP_DEBUG_DISPLAY', true);
 ```bash
 php -S localhost:8000 -t public
 ```
+
