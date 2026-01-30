@@ -42,7 +42,7 @@ Remove-Item wordpress.zip
 
 - Copy `wp-config.php` from `wp-config-sample.php` template
 ```bash
-copy wp-config-sample.php wp-config.php`
+copy wp-config-sample.php wp-config.php
 ```
 
 - Config MySQL account in `wp-config.php`
