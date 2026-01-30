@@ -41,15 +41,18 @@ tar -xf wordpress.zip
 
 - Relocate unzipped WordPress to root folder
 ```bash
-Move-Item wordpress\wp-admin .
-Move-Item wordpress\wp-includes .
-Move-Item wordpress\*.php .
+Move-Item wordpress\* public\
+```
+
+- Merge mu-plugins from GitHub
+```bash
+Copy-Item -Recurse -Force repo\wp-content\mu-plugins public\wp-content\
 ```
 
 - Cleanup:
 ```bash
-Remove-Item wordpress -Recurse
 Remove-Item wordpress.zip
+Remove-Item wordpress -Recurse
 ```
 
 ## 2. Config WordPress
