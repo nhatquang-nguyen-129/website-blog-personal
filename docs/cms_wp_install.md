@@ -1,68 +1,69 @@
 # WordPress Setup on Windows with CLI-first
 
-## Chuyển Terminal về Public Folder
-```bash
-cd public`
+This document describes how to set up **WordPress** on Windows with a focus on:
 
-## Download wordpress.zip
+- Lightweight installation
+- Minimal GUI usage
+- Suitable for WordPress custom feature
+
+---
+
+## 1. Install WordPress
+
+### 1.1. Download wordpress.zip
+
+- Redirect `path` to public folder which contains WordPress source code written in PHP
+```bash
+cd public
+```
+
+- Download `lastest version` from `wordpress.org`
 ```bash
 curl -o wordpress.zip https://wordpress.org/latest.zip`
+```
 
-## Unzip WordPress
+### 1.2. Relocate to source code folder
+
+- Unzip downloaded WordPress folder
+```bash
 tar -xf wordpress.zip
+```
 
-# Đưa WordPress ra web root
+- Relocate unzipped WordPress to root folder
+```bash
 Move-Item wordpress\* .
 Remove-Item wordpress -Recurse
 Remove-Item wordpress.zip
+```
 
+## 2. Config WordPress
 
-## Tạo config mẫu:
+### 2.1. Config WordPress database using MySQL
+
+- Copy `wp-config.php` from `wp-config-sample.php` template
 ```bash
 copy wp-config-sample.php wp-config.php`
+```
 
-Sửa wp-config.php trong VS Code
-
-# Khai báo dữ liệu database
+- Config MySQL account in `wp-config.php`
+```bash
 define('DB_NAME', 'blog');
 define('DB_USER', 'admin');
 define('DB_PASSWORD', 'admin');
 define('DB_HOST', '127.0.0.1');
-
 define('DB_CHARSET', 'utf8mb4');
 define('DB_COLLATE', '');
-# Chèn thêm Debug ở cuối file
+```
+- Config Debug mode
+```bash
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
+```
 
-Kiểm tra version và cài đặt wordpress trên local:
+### 2.2. Setup WordPress with UI
+
+- Verfity WordPress version and go to setup UI:
+```bash
 php -S localhost:8000 -t public
-
-
-
-
-Tạo Dummy Theme: Khi git pull mã nguồn, chỉ có phần wp-content là phần cho phép tùy chỉnh để fit với các custom features, nhưng localhost sẽ báo lỗi cài đặt lần đầu khi trong mã nguồn có các custom features mà không có theme từ trước, do đó sẽ cần tạo folder wp-content/themes/_dummy để có thể vào được UI cài đặt
-style.css: WordPress chỉ check file này nên đây là bắt buộc, chỉ cần có Theme Name là WordPress sẽ nhận mà không cần CSS thật
-/*
-Theme Name: Dummy
-Theme URI: https://internal
-Author: Internal
-Description: Non UI Bootstrap theme to satisfy WordPress requirements
-Version: 0.1.0
-Text Domain: _dummy
-*/
-
-index.php: WordPress sẽ fallback render khi không tìm thấy các templates khác nên file này là bắt buộc
-<?php
-// Silence is golden.
-
-functions.php: WordPress không bắt buộc phải có file này nhưng nên có để tránh edge-case và dễ Debug nếu cần
-<?php
-/**
- * Core Dummy Theme
- *
- * Infrastructure-only theme.
- * Do not put UI or business logic here.
- */
-
+```
