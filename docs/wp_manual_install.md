@@ -52,16 +52,6 @@ Remove-Item wordpress -Recurse
 Remove-Item wordpress.zip
 ```
 
-At this point, structure should be:
-public/
-├── wp-admin/
-├── wp-includes/
-├── wp-content/
-│   └── mu-plugins/
-├── index.php
-├── wp-load.php
-└── ...
-
 ## 2. Config WordPress
 
 ### 2.1. Config WordPress database using MySQL
