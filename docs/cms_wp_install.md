@@ -19,7 +19,7 @@ cd public
 
 - Download `lastest version` from `wordpress.org`
 ```bash
-curl -o wordpress.zip https://wordpress.org/latest.zip`
+curl -o wordpress.zip https://wordpress.org/latest.zip
 ```
 
 ### 1.2. Relocate to source code folder
