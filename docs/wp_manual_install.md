@@ -39,20 +39,23 @@ So we copy only core files, not wp-content.
 tar -xf wordpress.zip
 ```
 
-- Relocate unzipped WordPress to root folder
-```bash
-Move-Item wordpress\* public\
-```
-
 - Merge mu-plugins from GitHub
 ```bash
-Copy-Item -Recurse -Force repo\wp-content\mu-plugins public\wp-content\
+Copy-Item -Recurse -Force wp-content\mu-plugins wordpress\wp-content\
 ```
 
-- Cleanup:
+- Cleanup after mẻ:
 ```bash
+Move-Item wordpress\* .
 Remove-Item wordpress.zip
-Remove-Item wordpress -Recurse
+Remove-Item wordpress -Recurse -Force
+```
+
+- Test location after merging
+```bash
+Test-Path wp-content\mu-plugins
+Test-Path wp-content\themes
+Test-Path wp-content\plugins
 ```
 
 ## 2. Config WordPress
