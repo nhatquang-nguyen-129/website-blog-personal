@@ -86,9 +86,13 @@ define('WP_DEBUG_DISPLAY', true);
 
 ### 2.2. Setup WordPress with UI
 
-- Verfity WordPress version and go to setup UI:
+- Go to root folder:
 ```bash
 cd ..
+```
+
+- Verfity WordPress version and go to setup UI:
+```bash
 php -S localhost:8000 -t public
 ```
 
