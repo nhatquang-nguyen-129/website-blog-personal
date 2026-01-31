@@ -44,18 +44,19 @@ tar -xf wordpress.zip
 Copy-Item -Recurse -Force wp-content\mu-plugins wordpress\wp-content\
 ```
 
-- Cleanup after mẻ:
+- Cleanup after merging:
 ```bash
+Remove-Item wp-content -Recurse -Force
 Move-Item wordpress\* .
-Remove-Item wordpress.zip
 Remove-Item wordpress -Recurse -Force
+Remove-Item wordpress.zip
 ```
 
 - Test location after merging
 ```bash
-Test-Path wp-content\mu-plugins
 Test-Path wp-content\themes
 Test-Path wp-content\plugins
+Test-Path wp-content\mu-plugins
 ```
 
 ## 2. Config WordPress
@@ -87,6 +88,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 - Verfity WordPress version and go to setup UI:
 ```bash
+cd ..
 php -S localhost:8000 -t public
 ```
 

@@ -1,6 +1,6 @@
 # Login vào MySQL trên Windows PowerShell
 ```bash
-mysql -u root -p
+mysql -u admin -p
 ```
 
 # Kiểm tra danh sách Database
