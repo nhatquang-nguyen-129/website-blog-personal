@@ -1,14 +1,17 @@
 <?php
-/**
- * Plugin Name: Multilingual Post Toggle (MU)
- * Description: Toggle multilingual content per post using declared language blocks.
- */
+/*
+Plugin Name: Multilingual Post (MU)
+*/
 
-defined('ABSPATH') || exit;
+if (!defined('ABSPATH')) exit;
 
-define('ML_POST_PATH', __DIR__);
-define('ML_POST_URL', content_url('mu-plugins/multilingual-post'));
+define('MLP_PATH', __DIR__);
 
-require_once ML_POST_PATH . '/inc/meta.php';
-require_once ML_POST_PATH . '/inc/render.php';
-require_once ML_POST_PATH . '/inc/enqueue.php';
+require MLP_PATH . '/admin/metabox-language.php';
+require MLP_PATH . '/admin/metabox-translations.php';
+require MLP_PATH . '/admin/create-translation.php';
+
+require MLP_PATH . '/core/post-linking.php';
+require MLP_PATH . '/core/duplicate-post.php';
+
+require MLP_PATH . '/frontend/language-switcher.php';
