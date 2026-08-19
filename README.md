@@ -1,70 +1,79 @@
+# Blog cá nhân
 
-| Branch | Purpose |
-|------|--------|
-| `main` | **Stable branch** – ready for deployment |
-| `development` | Active development & feature work |
-| `experiment/*` | Isolated experiments, prototypes, or architectural tests |
+Blog cá nhân xây dựng thủ công trên nền **Payload Website Template** (Next.js App Router + Payload CMS), thay vì dùng SaaS CMS hay theme dựng sẵn. Toàn bộ giao diện, plugin và tính năng được tự viết trong repo này.
 
-Only **code and deterministic artifacts** are promoted to `main`.
+Chi tiết định hướng kỹ thuật, tech stack, và quy ước code: xem [CLAUDE.md](./CLAUDE.md).
 
 ---
+
+## Tech stack
+
+- **Next.js** (App Router) — trang public và `/admin` chạy chung một app.
+- **Payload CMS 3.x** — cấu hình trong `src/payload.config.ts`, admin panel tự sinh từ config.
+- **Database** — MongoDB lúc khởi tạo, sẽ chuyển sang **Postgres** trước khi deploy VPS.
+- **Tailwind CSS v4** cho styling.
+- **Lexical richtext** (`@payloadcms/richtext-lexical`) cho nội dung bài viết.
+- **Hosting**: VPS tự quản lý (không dùng Vercel/Netlify).
+
+## Cấu trúc thư mục chính
+
+```
+src/
+├── app/            # Route Next.js — (marketing) và (payload)
+├── collections/    # Định nghĩa CMS: Posts, Pages, Categories, Media, Users
+├── blocks/         # Layout builder blocks
+├── heros/          # Các kiểu hero section
+├── fields/         # Field dùng chung giữa các collection
+├── access/         # Access control
+├── endpoints/      # Custom REST endpoint
+├── hooks/          # Payload hooks
+├── plugins/        # Cấu hình plugin Payload
+├── providers/      # React context providers
+├── search/         # Cấu hình plugin-search
+├── components/     # React components dùng chung
+└── utilities/      # Hàm tiện ích
+```
 
 ## Repository Scope
 
-This repository intentionally includes **only what should be version-controlled**.
+### ✅ Có trong repo
+- Code nguồn Next.js + Payload (collections, blocks, fields, components...)
+- Cấu hình build, lint, TypeScript
+- `payload-types.ts` (sinh ra từ `pnpm generate:types`, được commit để CI/build không cần chạy generate lại)
+- Tài liệu (`docs/`)
+- `.env.example`
 
-### ✅ Included
-- Custom themes (e.g. GeneratePress child theme)
-- Custom plugins
-- Frontend assets (JS, CSS, build configs)
-- Schema definitions (CPTs, taxonomies, block structures)
-- Seed scripts & demo content
-- Documentation
+### ❌ Không có trong repo
+- `node_modules`, build output (`.next/`, `/build`)
+- File `.env` thật (secrets, connection string)
+- Media upload của người dùng (`public/media`)
+- Database dump
 
-### ❌ Excluded
-- WordPress core files
-- Environment-specific configuration (`wp-config.php`)
-- Database dumps
-- Media uploads
-- Secrets & credentials
+Xem [.gitignore](./.gitignore) để biết chi tiết.
 
-See `.gitignore` for details.
+## Nội dung bài viết
 
----
+Bài viết được soạn qua **admin UI của Payload** (`/admin`) và lưu trong database — không dùng file Markdown + Git để viết bài. Rich text dùng Lexical, có thể xuất ra dạng block tuỳ layout.
 
-## Content Strategy
+## Đa ngôn ngữ
 
-- **Production content** lives in the database and is **not versioned**
-- **Demo / test content** is generated via:
-  - Seed scripts
-  - Importable markdown or XML files
-- This allows consistent UI & feature testing across multiple environments without coupling logic to real content
+Dùng tính năng localization tích hợp sẵn của Payload, locale `vi` mặc định + `en`, khai báo trong `payload.config.ts`.
 
-The long-term goal is to support **file-based content workflows** (e.g. Markdown → WordPress import), enabling content portability and multi-device authoring.
+## Bình luận độc giả
 
----
-
-## Customization Principles
-
-This blog prioritizes:
-
-- Minimal themes (layout over decoration)
-- Clear typography & reading experience
-- Dark mode support
-- Multilingual posts (language switching within the same article)
-- Progressive enhancement over heavy plugins
-
-Design inspiration leans toward **writing-first platforms** (e.g. Substack-style layouts), rather than traditional WordPress blog aesthetics.
-
----
+Dùng [Giscus](https://giscus.app) nhúng vào component hiển thị bài viết — không cần backend riêng cho comment.
 
 ## Local Development
 
-Typical local workflow:
+Xem hướng dẫn chi tiết trong [docs/local.md](./docs/local.md).
+
+Tóm tắt nhanh:
 
 ```bash
-# Start PHP built-in server
-php -S localhost:8000 -t public
+pnpm install
+cp .env.example .env
+pnpm dev
+```
 
-# Access admin
-http://localhost:8000/wp-admin
+- Frontend: http://localhost:3000
+- Admin: http://localhost:3000/admin

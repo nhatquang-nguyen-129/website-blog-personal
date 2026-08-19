@@ -1,34 +1,48 @@
-# OS/IDE
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
-.idea/
-.vscode/
-*.log
+*.pem
 
-# WordPress generic core
-public/wordpress.zip
-public/wp-admin/
-public/wp-includes/
-public/index.php
-public/xmlrpc.php
-public/wp-*.php
-public/license.txt
-public/readme.html
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# WordPress config
-public/wp-config.php
+# local env files — never commit real secrets
+.env
+.env*.local
+!.env.example
 
-# WordPress runtime
-public/wp-content/uploads/
-public/wp-content/cache/
-public/wp-content/debug.log
+# vercel (not used for hosting, but ignore if tooling generates it)
+.vercel
 
-# WordPress content exclude mu-plugins
-public/wp-content/*
-!public/wp-content/mu-plugins/
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# Nodes
-node_modules/
-vendor/
+# payload
+/.payload
+payload-types.ts.bak
 
-# Docker
-docker/.env
+# uploaded media (not versioned — lives on the VPS / object storage)
+/public/media
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
