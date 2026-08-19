@@ -1,68 +1,68 @@
-# Chạy và triển khai local
+# Running and deploying locally
 
-Hướng dẫn dựng source lần đầu, chạy dev server, và mô phỏng môi trường gần giống VPS trên máy local.
+Guide for the first-time setup, running the dev server, and simulating a VPS-like environment on your local machine.
 
-## Yêu cầu
+## Requirements
 
 - Node.js LTS (>= 20)
-- pnpm 9 (`corepack prepare pnpm@9 --activate` — pnpm 10+ yêu cầu Node 22, chưa tương thích với Node 20)
-- PostgreSQL local (dùng luôn từ đầu, không qua Mongo — xem [CLAUDE.md](../CLAUDE.md#tech-stack))
+- pnpm 9 (`corepack prepare pnpm@9 --activate` — pnpm 10+ requires Node 22, not yet compatible with Node 20)
+- PostgreSQL locally (used from the start, no Mongo detour — see [CLAUDE.md](../CLAUDE.md#tech-stack))
 
-## 1. Lấy source lần đầu
+## 1. Getting the source for the first time
 
-Template gốc dùng `workspace:*` trong monorepo Payload, **không clone tay** thư mục `templates/website` — luôn dùng CLI chính thức để dependency resolve đúng phiên bản, chỉ định adapter Postgres ngay từ đầu:
+The original template uses `workspace:*` inside the Payload monorepo — **don't hand-copy** the `templates/website` folder. Always use the official CLI so dependencies resolve to the right version, specifying the Postgres adapter from the start:
 
 ```bash
 npx create-payload-app@latest -n my-blog -t website --db postgres
 cd my-blog
 ```
 
-`.env` được CLI tự sinh sẵn với `DATABASE_URL` trỏ tới Postgres.
+The CLI auto-generates `.env` with `DATABASE_URL` already pointing at Postgres.
 
-Nếu repo đã tồn tại (đã có `src/`), chỉ cần clone repo này và cài dependency ở bước 2.
+If the repo already exists (already has `src/`), just clone this repo and install dependencies in step 2.
 
-## 2. Cài dependency
+## 2. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-Nếu gặp lỗi `packages field missing or empty`, kiểm tra `pnpm-workspace.yaml` có khai báo `packages: ['.']` — file này chỉ tồn tại để khai báo `allowBuilds`, không phải một monorepo thật.
+If you hit a `packages field missing or empty` error, check that `pnpm-workspace.yaml` declares `packages: ['.']` — that file only exists to declare `allowBuilds`, it's not a real monorepo.
 
-## 3. Cấu hình `.env`
+## 3. Configure `.env`
 
 ```
 PORT=3000
 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/blog
-PAYLOAD_SECRET=<chuỗi random dài, chỉ dùng local>
+PAYLOAD_SECRET=<long random string, local-only>
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
-CRON_SECRET=<chuỗi random>
-PREVIEW_SECRET=<chuỗi random>
+CRON_SECRET=<random string>
+PREVIEW_SECRET=<random string>
 ```
 
-`PORT=3000` giữ cho `pnpm dev`/`pnpm start` luôn cố định ở cổng 3000, không tự nhảy sang cổng khác nếu 3000 từng bị chiếm.
+`PORT=3000` keeps `pnpm dev`/`pnpm start` fixed on port 3000, instead of Next.js hopping to a different port if 3000 was ever taken.
 
-Không commit file `.env` thật lên Git — chỉ commit `.env.example`.
+Never commit a real `.env` file to Git — only commit `.env.example`.
 
-## 4. Chạy database local
+## 4. Run the local database
 
-Cài PostgreSQL qua Homebrew (macOS):
+Install PostgreSQL via Homebrew (macOS):
 
 ```bash
 brew install postgresql@16
 brew services start postgresql@16
 ```
 
-Tạo role và database khớp với `DATABASE_URL` ở trên:
+Create a role and database matching the `DATABASE_URL` above:
 
 ```bash
 psql -d postgres -c "CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres';"
 psql -d postgres -c "CREATE DATABASE blog OWNER postgres;"
 ```
 
-(Nếu dùng Docker: `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16`, rồi tự tạo database `blog`.)
+(With Docker instead: `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16`, then create the `blog` database yourself.)
 
-## 5. Chạy dev server
+## 5. Run the dev server
 
 ```bash
 pnpm dev
@@ -71,47 +71,53 @@ pnpm dev
 - Frontend: http://localhost:3000
 - Admin panel: http://localhost:3000/admin
 
-Khi database còn trống (chưa có user nào — đúng trạng thái sau lần deploy VPS đầu tiên), `/admin` tự hiện form **"Create your first user"**. Điền email/password thật của bạn ở đây để tạo admin — không có tài khoản mặc định nào được hardcode trong code. Từ user thứ hai trở đi (hoặc sau khi user đầu đã tồn tại), `/admin` chỉ hiện màn hình đăng nhập bình thường. Sửa lại thông tin admin (đổi email/password) làm sau, trong menu **Users** của admin.
+When the database is still empty (no users — exactly the state after the first VPS deploy), `/admin` automatically shows the **"Create your first user"** form. Fill in your real email/password there to create the admin — no default account is hardcoded anywhere in the code. From the second user onward (or once the first user already exists), `/admin` just shows a normal login screen. Editing admin info (changing email/password) later happens in the admin's **Users** menu.
 
-Next.js 16 tự động chèn một block "agent rules" vào `CLAUDE.md` mỗi lần `next dev` chạy. Repo này đã tắt hành vi đó (`agentRules: false` trong `next.config.ts`) để giữ `CLAUDE.md` hoàn toàn do người viết kiểm soát.
+Next.js 16 auto-injects an "agent rules" block into `CLAUDE.md` every time `next dev` runs. This repo has disabled that (`agentRules: false` in `next.config.ts`) to keep `CLAUDE.md` fully author-controlled.
 
-### Seed dữ liệu mẫu (tuỳ chọn)
+### Seeding sample data (optional)
 
-Nếu muốn có sẵn vài bài post/trang mẫu để xem giao diện thay vì bắt đầu từ trống, sau khi đã tạo user admin đầu tiên qua `/admin`, đăng nhập rồi gọi:
+If you want a few sample posts/pages to look at instead of starting empty, after creating the first admin user via `/admin`, log in and call:
 
 ```bash
 curl -X POST http://localhost:3000/next/seed -b cookies.txt
 ```
 
-(cần cookie phiên đăng nhập hợp lệ — đăng nhập qua `/api/users/login` rồi dùng cookie trả về, hoặc gọi trực tiếp từ trình duyệt sau khi đã đăng nhập admin).
+(needs a valid login session cookie — log in via `/api/users/login` and use the returned cookie, or call it directly from the browser once logged into admin).
 
-Lệnh này **xoá sạch** toàn bộ posts/pages/categories hiện có rồi chèn lại dữ liệu mẫu — không chạy trên dữ liệu thật đang dùng.
+This endpoint **wipes** all existing posts/pages/categories and re-inserts sample data — don't run it against real data you're using.
 
-## 6. Các lệnh thường dùng khi phát triển
+## 6. Live reload while developing
+
+`pnpm dev` already gives you live/hot reload out of the box — no extra setup needed. Keep the dev server running and a browser tab open at `http://localhost:3000`; on every file save, Next.js recompiles and the browser updates automatically (Fast Refresh) within about a second, usually preserving component state. Server-side or config changes (e.g. `payload.config.ts`, `next.config.ts`) still auto-reload, just with a full page refresh instead of a hot patch — you'll see `✓ Compiled` / `Restarting the server...` in the terminal when that happens.
+
+The `⨯ turbopackServerFastRefresh` line in the startup log is an unrelated, still-experimental Next.js 16 flag for optimizing the dev server's own recompile speed — it has no effect on whether the browser hot-reloads, so it's safe to ignore.
+
+## 7. Common commands during development
 
 ```bash
-pnpm generate:types   # bắt buộc chạy sau khi đổi collection/field trong payload.config.ts
-pnpm lint             # kiểm tra lint
-pnpm lint:fix         # tự sửa lỗi lint
-pnpm build            # build production, kiểm tra trước khi deploy
+pnpm generate:types   # required after changing a collection/field in payload.config.ts
+pnpm lint             # run lint
+pnpm lint:fix         # auto-fix lint errors
+pnpm build            # production build, verify before deploying
 ```
 
-Luôn chạy `pnpm generate:types` và commit `payload-types.ts` cùng thay đổi schema — xem [CLAUDE.md](../CLAUDE.md#lệnh-thường-dùng).
+Always run `pnpm generate:types` and commit `payload-types.ts` together with schema changes — see [CLAUDE.md](../CLAUDE.md#common-commands).
 
-## 7. Kiểm tra build production local (mô phỏng VPS)
+## 8. Verifying a local production build (simulating the VPS)
 
-Trước khi deploy, nên build và chạy thử ở chế độ production ngay trên máy local:
+Before deploying, build and run in production mode locally first:
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-Mặc định Next.js sẽ chạy ở http://localhost:3000. Đây cũng là cách VPS sẽ chạy app (qua PM2), nên nếu bước này lỗi thì deploy cũng sẽ lỗi.
+Next.js runs at http://localhost:3000 by default. This is also how the VPS will run the app (via PM2), so if this step fails, deploy will fail too.
 
 ## Troubleshooting
 
-- **Admin panel trắng trang / lỗi kết nối DB**: kiểm tra `DATABASE_URL` trong `.env` và đảm bảo Postgres đang chạy (`pg_isready`).
-- **Type lỗi sau khi đổi collection**: chạy `pnpm generate:types` rồi restart dev server.
-- **Port 3000 bị chiếm**: đổi tạm `PORT=3001 pnpm dev` hoặc tắt tiến trình đang giữ cổng đó (`lsof -i :3000`).
-- **`pnpm install` báo lỗi Node.js version với pnpm 10+**: dùng `corepack prepare pnpm@9 --activate` để pin về pnpm 9, tương thích Node 20.
+- **Blank admin panel / DB connection error**: check `DATABASE_URL` in `.env` and make sure Postgres is running (`pg_isready`).
+- **Type errors after changing a collection**: run `pnpm generate:types`, then restart the dev server.
+- **Port 3000 already in use**: temporarily use `PORT=3001 pnpm dev`, or kill whatever process holds that port (`lsof -i :3000`).
+- **`pnpm install` errors about Node.js version with pnpm 10+**: run `corepack prepare pnpm@9 --activate` to pin pnpm 9, which is compatible with Node 20.
