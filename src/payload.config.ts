@@ -27,6 +27,8 @@ export default buildConfig({
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeDashboard: ['@/components/BeforeDashboard'],
+      // Adds a "Go to site" button to the top-right of every admin view.
+      actions: ['@/components/GoToSite'],
     },
     importMap: {
       baseDir: path.resolve(dirname),
