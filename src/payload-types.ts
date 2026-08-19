@@ -1628,6 +1628,14 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: number;
+  brand?: {
+    type?: ('text' | 'image') | null;
+    text?: string | null;
+    /**
+     * Rendered as a circular avatar, similar to a Facebook profile picture.
+     */
+    image?: (number | null) | Media;
+  };
   navItems?:
     | {
         link: {
@@ -1657,6 +1665,10 @@ export interface Header {
  */
 export interface Footer {
   id: number;
+  /**
+   * Shown next to the logo, e.g. "© 2026 Your Name"
+   */
+  copyrightText?: string | null;
   navItems?:
     | {
         link: {
@@ -1685,6 +1697,13 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  brand?:
+    | T
+    | {
+        type?: T;
+        text?: T;
+        image?: T;
+      };
   navItems?:
     | T
     | {
@@ -1708,6 +1727,7 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
+  copyrightText?: T;
   navItems?:
     | T
     | {
