@@ -31,7 +31,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
         <SearchIcon className="w-[18px]" />
       </Link>
       <Button asChild className="rounded-full" size="sm">
-        <Link href="/contact">Đăng ký</Link>
+        <Link href="/contact">Subscribe</Link>
       </Button>
     </nav>
   )
