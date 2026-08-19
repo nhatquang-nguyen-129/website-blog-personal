@@ -1,20 +1,20 @@
 # CLAUDE.md
 
-File này hướng dẫn Claude Code (hoặc bất kỳ AI coding assistant nào) khi làm việc trong repo blog cá nhân này.
+This file guides Claude Code (or any AI coding assistant) working in this personal blog repo.
 
-## Tổng quan dự án
+## Project overview
 
-Đây là blog cá nhân, xây trên nền **Payload Website Template** (Next.js + Payload CMS) — một mã nguồn duy nhất chứa cả frontend lẫn CMS/backend, không tách repo riêng.
+This is a personal blog, built on the **Payload Website Template** (Next.js + Payload CMS) — a single codebase containing both the frontend and the CMS/backend, no separate repo.
 
-Quyết định hướng đi (xem chi tiết lý do trong `docs/tech-stack-direction.md` nếu có mang theo từ project Claude):
-- Muốn tự code giao diện, tự có database, tự viết plugin/tính năng mới, tự có CMS riêng — không dùng SaaS CMS bên ngoài.
-- Nội dung bài viết lưu trong **database**, soạn qua **admin UI** của Payload (không dùng file Markdown + Git để viết bài).
-- Hosting mục tiêu: **VPS tự quản lý** (không dùng Vercel/Netlify).
-- Ưu tiên tính năng: Markdown/MDX rich text (Payload dùng Lexical richtext, xuất được ra dạng block), bình luận độc giả, SEO, đa ngôn ngữ (Việt/Anh).
+Direction decisions (see `docs/tech-stack-direction.md` for detailed reasoning, if carried over from the Claude project):
+- Want to code the UI myself, own the database, write custom plugins/features, run my own CMS — no external SaaS CMS.
+- Post content lives in the **database**, authored through Payload's **admin UI** (not Markdown files + Git).
+- Target hosting: **self-managed VPS** (not Vercel/Netlify).
+- Priority features: Markdown/MDX rich text (Payload uses Lexical richtext, exportable as blocks), reader comments, SEO, multi-language (Vietnamese/English).
 
-## Cách lấy source ban đầu
+## Getting the initial source
 
-Vì template gốc dùng `workspace:*` trong monorepo Payload, **không clone tay thư mục `templates/website`** — luôn dùng CLI chính thức để dependency được resolve đúng phiên bản:
+Since the original template uses `workspace:*` inside the Payload monorepo, **don't hand-copy the `templates/website` folder** — always use the official CLI so dependencies resolve to the right versions:
 
 ```bash
 npx create-payload-app@latest my-blog -t website
@@ -24,73 +24,73 @@ cp .env.example .env
 
 ## Tech stack
 
-- **Framework**: Next.js (App Router) — cả trang public lẫn `/admin` chạy chung 1 app.
-- **CMS**: Payload CMS 3.x — cấu hình toàn bộ trong `src/payload.config.ts`, admin panel tự sinh từ config, không cần code UI riêng.
-- **Database**: **Postgres** (`@payloadcms/db-postgres`), dùng từ đầu (đã scaffold bằng `create-payload-app ... --db postgres`) thay vì Mongo mặc định của CLI, để local khớp môi trường VPS.
+- **Framework**: Next.js (App Router) — both the public site and `/admin` run in one app.
+- **CMS**: Payload CMS 3.x — configured entirely in `src/payload.config.ts`, admin panel auto-generated from config, no separate UI code needed.
+- **Database**: **Postgres** (`@payloadcms/db-postgres`), used from the start (scaffolded with `create-payload-app ... --db postgres`) instead of the CLI's Mongo default, so local matches the VPS environment.
 - **Styling**: Tailwind CSS v4.
 - **Rich text**: `@payloadcms/richtext-lexical`.
-- **Plugin có sẵn**: `plugin-seo`, `plugin-search`, `plugin-redirects`, `plugin-form-builder`, `plugin-nested-docs`.
-- **Bình luận độc giả**: chưa có sẵn trong template — sẽ thêm bằng Giscus (nhúng script vào block/component bài viết), không cần backend riêng cho comment.
-- **Đa ngôn ngữ**: dùng tính năng localization tích hợp sẵn của Payload (khai báo `localization` trong `payload.config.ts`, locale `vi` mặc định + `en`).
+- **Plugins already included**: `plugin-seo`, `plugin-search`, `plugin-redirects`, `plugin-form-builder`, `plugin-nested-docs`.
+- **Reader comments**: not in the template yet — will add Giscus (embed a script into the post block/component), no separate comment backend needed.
+- **Multi-language**: use Payload's built-in localization (declare `localization` in `payload.config.ts`, `vi` as default locale + `en`).
 
-## Cấu trúc thư mục chính (`src/`)
+## Main directory structure (`src/`)
 
 ```
 src/
-├── app/            # Next.js App Router — route (frontend) và (payload)
-├── collections/    # Định nghĩa CMS: Posts, Pages, Categories, Media, Users
-├── Header/         # Global config + component cho header (Payload global)
-├── Footer/         # Global config + component cho footer (Payload global)
-├── blocks/         # Layout builder blocks (dùng trong Pages/Posts)
-├── heros/          # Các kiểu hero section cho trang
-├── fields/         # Field dùng chung, tái sử dụng giữa các collection
-├── access/         # Access control (ai được đọc/sửa gì)
-├── endpoints/      # Custom REST endpoint riêng
+├── app/            # Next.js App Router — (frontend) and (payload) route groups
+├── collections/    # CMS definitions: Posts, Pages, Categories, Media, Users
+├── Header/         # Global config + component for the header (Payload global)
+├── Footer/         # Global config + component for the footer (Payload global)
+├── blocks/         # Layout builder blocks (used in Pages/Posts)
+├── heros/          # Hero section variants for pages
+├── fields/         # Shared fields reused across collections
+├── access/         # Access control (who can read/edit what)
+├── endpoints/      # Custom REST endpoints
 ├── hooks/          # Payload hooks (beforeChange, afterChange...)
-├── plugins/        # Khai báo/cấu hình các plugin Payload
-├── providers/      # React context providers cho frontend
-├── search/         # Cấu hình plugin-search
-├── components/     # React components dùng chung cho frontend
-└── utilities/      # Hàm tiện ích
+├── plugins/        # Payload plugin declarations/config
+├── providers/      # React context providers for the frontend
+├── search/         # plugin-search config
+├── components/     # Shared React components for the frontend
+└── utilities/      # Utility functions
 ```
 
-Muốn thêm tính năng mới (vd. thêm loại nội dung, thêm field, thêm plugin riêng) → sửa/thêm trong `collections/`, `fields/`, `blocks/`, hoặc `plugins/`. Muốn đổi giao diện → sửa trong `app/` và `components/`.
+To add a new feature (e.g. a new content type, a field, a custom plugin) → edit/add in `collections/`, `fields/`, `blocks/`, or `plugins/`. To change the UI → edit `app/` and `components/`.
 
-## Lệnh thường dùng
+## Common commands
 
 ```bash
-pnpm install              # cài dependency
-pnpm dev                  # chạy dev server tại http://localhost:3000 (admin: /admin)
-pnpm build                # build production (chạy payload build)
-pnpm generate:types       # sinh lại TypeScript types từ Payload config sau khi đổi collection/field
-pnpm lint                 # kiểm tra lint
-pnpm lint:fix             # tự sửa lỗi lint
+pnpm install              # install dependencies
+pnpm dev                  # run dev server at http://localhost:3000 (admin: /admin)
+pnpm build                # production build (runs payload build)
+pnpm generate:types       # regenerate TypeScript types from Payload config after changing a collection/field
+pnpm lint                 # run lint
+pnpm lint:fix             # auto-fix lint errors
 ```
 
-Sau mỗi lần đổi `collections/` hoặc field trong `payload.config.ts`, luôn chạy lại `pnpm generate:types` để `payload-types.ts` cập nhật đúng.
+After every change to `collections/` or a field in `payload.config.ts`, always rerun `pnpm generate:types` so `payload-types.ts` stays correct.
 
-## Biến môi trường (`.env`)
+## Environment variables (`.env`)
 
 ```
-DATABASE_URL=            # connection string Postgres
-PAYLOAD_SECRET=          # chuỗi bí mật để mã hoá JWT — không commit giá trị thật
-NEXT_PUBLIC_SERVER_URL=  # URL public của site, vd. http://localhost:3000 lúc dev
-CRON_SECRET=             # bảo vệ cron job (scheduled publish)
-PREVIEW_SECRET=          # bảo vệ route live preview
+DATABASE_URL=            # Postgres connection string
+PAYLOAD_SECRET=          # secret used to encrypt JWTs — never commit the real value
+NEXT_PUBLIC_SERVER_URL=  # public URL of the site, e.g. http://localhost:3000 in dev
+CRON_SECRET=             # protects cron jobs (scheduled publish)
+PREVIEW_SECRET=          # protects the live preview route
 ```
 
-Không commit file `.env` thật lên Git — chỉ commit `.env.example`.
+Never commit a real `.env` file to Git — only commit `.env.example`.
 
-## Việc cần làm tiếp (roadmap tùy biến)
+## Next steps (customization roadmap)
 
-1. Đổi branding: tên site thật (hiện là placeholder "Blog Cá Nhân" trong `components/Logo/Logo.tsx`), favicon, mô tả.
-2. Thêm localization `vi`/`en` trong `payload.config.ts`, đánh dấu field nào cần dịch (`localized: true`).
-3. Thêm Giscus vào template hiển thị bài viết (component riêng trong `components/`, nhúng vào trang chi tiết Post).
-4. Kiểm tra/tinh chỉnh `plugin-seo` cho đúng nhu cầu (meta mặc định, OG image).
-5. Viết quy trình deploy VPS: build → chạy Next.js bằng PM2 (vì có phần server/API, không phải site tĩnh) → reverse proxy qua Nginx/Caddy → Postgres riêng trên VPS hoặc managed DB.
+1. Update branding: real site name (currently placeholder "Personal Blog" in `components/Logo/Logo.tsx`), favicon, description.
+2. Add `vi`/`en` localization in `payload.config.ts`, mark which fields need translation (`localized: true`).
+3. Add Giscus to the post-detail template (a dedicated component in `components/`, embedded in the Post detail page).
+4. Review/tune `plugin-seo` for actual needs (default meta, OG image).
+5. Write the VPS deploy process: build → run Next.js with PM2 (since there's a server/API part, not a static site) → reverse proxy via Nginx/Caddy → dedicated Postgres on the VPS or a managed DB.
 
-## Quy ước code
+## Code conventions
 
-- Ưu tiên sửa trong `src/collections`, `src/blocks`, `src/fields` khi thêm tính năng CMS — tránh sửa trực tiếp package `payload`/`@payloadcms/*` (đó là dependency, không phải code của mình).
-- Giữ mọi logic truy cập dữ liệu qua Payload Local API (`payload.find`, `payload.create`...) với `overrideAccess: false` khi chạy trong ngữ cảnh có user, để không bỏ qua access control.
-- Sau khi đổi schema (field/collection), luôn chạy `pnpm generate:types` trước khi commit.
+- Prefer editing `src/collections`, `src/blocks`, `src/fields` when adding CMS features — avoid editing the `payload`/`@payloadcms/*` packages directly (those are dependencies, not our code).
+- Keep all data-access logic going through the Payload Local API (`payload.find`, `payload.create`...) with `overrideAccess: false` when running in a user context, so access control isn't bypassed.
+- After changing a schema (field/collection), always run `pnpm generate:types` before committing.
