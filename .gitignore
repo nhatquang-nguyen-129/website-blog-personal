@@ -39,6 +39,16 @@ next-env.d.ts
 /.payload
 payload-types.ts.bak
 
+# next-sitemap (generated at build time)
+/public/robots.txt
+/public/sitemap*.xml
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # uploaded media (not versioned — lives on the VPS / object storage)
 /public/media
 

@@ -26,7 +26,7 @@ cp .env.example .env
 
 - **Framework**: Next.js (App Router) — cả trang public lẫn `/admin` chạy chung 1 app.
 - **CMS**: Payload CMS 3.x — cấu hình toàn bộ trong `src/payload.config.ts`, admin panel tự sinh từ config, không cần code UI riêng.
-- **Database**: mặc định MongoDB khi mới `create-payload-app`. Sẽ đổi sang **Postgres** trước khi deploy VPS (đổi adapter `@payloadcms/db-mongodb` → `@payloadcms/db-postgres` trong `payload.config.ts` + `DATABASE_URL`).
+- **Database**: **Postgres** (`@payloadcms/db-postgres`), dùng từ đầu (đã scaffold bằng `create-payload-app ... --db postgres`) thay vì Mongo mặc định của CLI, để local khớp môi trường VPS.
 - **Styling**: Tailwind CSS v4.
 - **Rich text**: `@payloadcms/richtext-lexical`.
 - **Plugin có sẵn**: `plugin-seo`, `plugin-search`, `plugin-redirects`, `plugin-form-builder`, `plugin-nested-docs`.
@@ -37,8 +37,10 @@ cp .env.example .env
 
 ```
 src/
-├── app/            # Next.js App Router — route (marketing) và (payload)
+├── app/            # Next.js App Router — route (frontend) và (payload)
 ├── collections/    # Định nghĩa CMS: Posts, Pages, Categories, Media, Users
+├── Header/         # Global config + component cho header (Payload global)
+├── Footer/         # Global config + component cho footer (Payload global)
 ├── blocks/         # Layout builder blocks (dùng trong Pages/Posts)
 ├── heros/          # Các kiểu hero section cho trang
 ├── fields/         # Field dùng chung, tái sử dụng giữa các collection
@@ -70,7 +72,7 @@ Sau mỗi lần đổi `collections/` hoặc field trong `payload.config.ts`, lu
 ## Biến môi trường (`.env`)
 
 ```
-DATABASE_URL=            # connection string Mongo hoặc Postgres
+DATABASE_URL=            # connection string Postgres
 PAYLOAD_SECRET=          # chuỗi bí mật để mã hoá JWT — không commit giá trị thật
 NEXT_PUBLIC_SERVER_URL=  # URL public của site, vd. http://localhost:3000 lúc dev
 CRON_SECRET=             # bảo vệ cron job (scheduled publish)
@@ -81,12 +83,11 @@ Không commit file `.env` thật lên Git — chỉ commit `.env.example`.
 
 ## Việc cần làm tiếp (roadmap tùy biến)
 
-1. Đổi branding: tên site, logo, favicon, mô tả (trong `collections/`, `app/(frontend)/layout.tsx` hoặc tương đương).
-2. Đổi database adapter sang Postgres trước khi deploy VPS.
-3. Thêm localization `vi`/`en` trong `payload.config.ts`, đánh dấu field nào cần dịch (`localized: true`).
-4. Thêm Giscus vào template hiển thị bài viết (component riêng trong `components/`, nhúng vào trang chi tiết Post).
-5. Kiểm tra/tinh chỉnh `plugin-seo` cho đúng nhu cầu (meta mặc định, OG image).
-6. Viết quy trình deploy VPS: build → chạy Next.js bằng PM2 (vì có phần server/API, không phải site tĩnh) → reverse proxy qua Nginx/Caddy → Postgres riêng trên VPS hoặc managed DB.
+1. Đổi branding: tên site thật (hiện là placeholder "Blog Cá Nhân" trong `components/Logo/Logo.tsx`), favicon, mô tả.
+2. Thêm localization `vi`/`en` trong `payload.config.ts`, đánh dấu field nào cần dịch (`localized: true`).
+3. Thêm Giscus vào template hiển thị bài viết (component riêng trong `components/`, nhúng vào trang chi tiết Post).
+4. Kiểm tra/tinh chỉnh `plugin-seo` cho đúng nhu cầu (meta mặc định, OG image).
+5. Viết quy trình deploy VPS: build → chạy Next.js bằng PM2 (vì có phần server/API, không phải site tĩnh) → reverse proxy qua Nginx/Caddy → Postgres riêng trên VPS hoặc managed DB.
 
 ## Quy ước code
 

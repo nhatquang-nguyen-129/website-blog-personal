@@ -10,7 +10,7 @@ Chi tiết định hướng kỹ thuật, tech stack, và quy ước code: xem [
 
 - **Next.js** (App Router) — trang public và `/admin` chạy chung một app.
 - **Payload CMS 3.x** — cấu hình trong `src/payload.config.ts`, admin panel tự sinh từ config.
-- **Database** — MongoDB lúc khởi tạo, sẽ chuyển sang **Postgres** trước khi deploy VPS.
+- **Database** — **Postgres** (adapter `@payloadcms/db-postgres`), dùng từ đầu thay vì Mongo mặc định của CLI.
 - **Tailwind CSS v4** cho styling.
 - **Lexical richtext** (`@payloadcms/richtext-lexical`) cho nội dung bài viết.
 - **Hosting**: VPS tự quản lý (không dùng Vercel/Netlify).
@@ -19,8 +19,10 @@ Chi tiết định hướng kỹ thuật, tech stack, và quy ước code: xem [
 
 ```
 src/
-├── app/            # Route Next.js — (marketing) và (payload)
+├── app/            # Route Next.js — (frontend) và (payload)
 ├── collections/    # Định nghĩa CMS: Posts, Pages, Categories, Media, Users
+├── Header/         # Global config + component header
+├── Footer/         # Global config + component footer
 ├── blocks/         # Layout builder blocks
 ├── heros/          # Các kiểu hero section
 ├── fields/         # Field dùng chung giữa các collection
@@ -62,6 +64,10 @@ Dùng tính năng localization tích hợp sẵn của Payload, locale `vi` mặ
 ## Bình luận độc giả
 
 Dùng [Giscus](https://giscus.app) nhúng vào component hiển thị bài viết — không cần backend riêng cho comment.
+
+## Giao diện frontend
+
+Theme trắng + cam theo phong cách Substack. Chi tiết màu sắc, font, các component đã đổi, và các chỗ còn là placeholder cần thay trước khi public: xem [docs/frontend-theme.md](./docs/frontend-theme.md).
 
 ## Local Development
 
