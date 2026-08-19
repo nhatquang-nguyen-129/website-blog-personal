@@ -36,7 +36,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     >
       <div className="container flex items-center justify-between py-5">
         <Link className="shrink-0" href="/">
-          <Logo />
+          <Logo brand={data?.brand} />
         </Link>
         <HeaderNav data={data} />
       </div>
