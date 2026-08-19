@@ -10,6 +10,13 @@ export const Footer: GlobalConfig = {
   },
   fields: [
     {
+      name: 'copyrightText',
+      type: 'text',
+      admin: {
+        description: 'Shown next to the logo, e.g. "© 2026 Your Name"',
+      },
+    },
+    {
       name: 'navItems',
       type: 'array',
       fields: [
