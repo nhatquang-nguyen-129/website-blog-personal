@@ -1,29 +1,30 @@
-# Giao diện frontend (theme Substack: trắng + cam)
+# Frontend theme (Substack style: white + orange)
 
-Ghi lại các quyết định thiết kế đã áp dụng cho frontend, để không phải suy luận lại từ code khi chỉnh sửa sau này.
+Records the design decisions applied to the frontend, so they don't have to be re-derived from the code on future edits.
 
-## Màu sắc & typography
+## Colors & typography
 
-- Toàn bộ màu sắc là CSS custom properties trong [`src/app/(frontend)/globals.css`](../src/app/\(frontend\)/globals.css) (`:root` cho light mode, `[data-theme='dark']` cho dark mode) — không hardcode màu trực tiếp trong component.
-- Nền trắng (`--background`), chữ gần đen ấm (`--foreground`), **cam** làm màu nhấn duy nhất (`--primary`, dùng cho nút, link, category label).
-- Font serif (Source Serif 4, load qua `next/font/google` trong `layout.tsx`, biến `--font-source-serif`) dùng cho tiêu đề bài viết và nội dung bài viết (`prose`). Font sans (Geist) dùng cho UI/menu/meta text — đúng phong cách Substack.
-- Cấu hình prose/typography nằm ở `tailwind.config.mjs` (phần `theme.extend.typography`).
+- All colors are CSS custom properties in [`src/app/(frontend)/globals.css`](../src/app/\(frontend\)/globals.css) (`:root` for light mode, `[data-theme='dark']` for dark mode) — never hardcode colors directly in a component.
+- White background (`--background`), warm near-black text (`--foreground`), **orange** as the single accent color (`--primary`, used for buttons, links, category labels).
+- Serif font (Source Serif 4, loaded via `next/font/google` in `layout.tsx`, variable `--font-source-serif`) for post titles and post body content (`prose`). Sans font (Geist) for UI/nav/meta text — matches the Substack look.
+- Prose/typography config lives in `tailwind.config.mjs` (`theme.extend.typography`).
 
-## Các component đã đổi so với template gốc
+## Components changed from the original template
 
-- `Header/Component.client.tsx` + `Header/Nav`: từ header trong suốt nổi trên hero → thanh header trắng dính (sticky), có nút "Đăng ký" màu cam.
-- `Footer/Component.tsx`: từ nền đen → nền sáng tối giản.
-- `components/Card`, `components/CollectionArchive`: từ lưới card có khung → danh sách bài viết kiểu Substack (title serif, excerpt, meta, thumbnail bên phải).
-- `heros/PostHero`: từ hero ảnh nền tối full-bleed → header bài viết nền trắng, ảnh cover được đóng khung.
-- `heros/HighImpact`: đã bỏ `-mt-[10.4rem]` (mẹo margin âm dựa vào header trong suốt cũ) vì header giờ luôn chiếm chỗ bình thường trong layout.
-- `components/Logo/Logo.tsx`: từ logo SVG của Payload → wordmark chữ.
+- `Header/Component.client.tsx` + `Header/Nav`: from a transparent header floating over the hero → a sticky white header bar, with an orange "Subscribe" button.
+- `Footer/Component.tsx`: from a black background → a light, minimal one.
+- `components/Card`, `components/CollectionArchive`: from a boxed card grid → a Substack-style post list (serif title, excerpt, meta, thumbnail on the right).
+- `heros/PostHero`: from a full-bleed dark background image hero → a white post header with a contained cover image.
+- `heros/HighImpact`: removed `-mt-[10.4rem]` (a negative-margin trick that relied on the old transparent header) since the header now always takes up normal space in the layout.
+- `components/Logo/Logo.tsx`: from Payload's SVG logo → a text wordmark.
+- `components/GoToSite/index.tsx` (new): registered under `admin.components.actions` in `payload.config.ts` — adds a "Go to site" button to the top-right of every admin page, linking to the public site.
 
-## Việc còn là placeholder — cần đổi trước khi public
+## Still placeholders — change before going public
 
-- **Tên blog**: chuỗi `"Blog Cá Nhân"` hardcode trong `src/components/Logo/Logo.tsx`. Đổi 1 chỗ này khi có tên thật.
-- **Nút "Đăng ký"** trong `Header/Nav/index.tsx`: hiện trỏ tới `/contact` vì site chưa có tính năng subscribe/newsletter thật. Khi có form thật (form-builder hoặc dịch vụ email ngoài), cập nhật lại `href`.
-- **Favicon**: vẫn dùng `public/favicon.ico`/`favicon.svg` mặc định của template — chưa đổi theo roadmap ở [CLAUDE.md](../CLAUDE.md#việc-cần-làm-tiếp-roadmap-tùy-biến).
+- **Blog name**: the string `"Personal Blog"` hardcoded in `src/components/Logo/Logo.tsx`. Change it in that one spot once you have a real name.
+- **"Subscribe" button** in `Header/Nav/index.tsx`: currently points to `/contact` since the site has no real subscribe/newsletter feature yet. Once there's a real form (form-builder or an external email service), update the `href`.
+- **Favicon**: still using the template's default `public/favicon.ico`/`favicon.svg` — not yet changed per the roadmap in [CLAUDE.md](../CLAUDE.md#next-steps-customization-roadmap).
 
-## Kiểm tra sau khi đổi theme
+## Checking after theme changes
 
-`pnpm dev` không tự bắt lỗi typography/màu sắc — nếu sửa `globals.css` hoặc `tailwind.config.mjs`, nên chạy `pnpm build` một lần để chắc Turbopack build production không lỗi (từng có bug Turbopack + `postcss.config.js` ở Next 16.3.0, đã fix bằng cách nâng lên 16.3.1).
+`pnpm dev` doesn't automatically catch typography/color mistakes — after editing `globals.css` or `tailwind.config.mjs`, run `pnpm build` once to make sure the Turbopack production build doesn't break (there was previously a Turbopack + `postcss.config.js` bug on Next 16.3.0, fixed by upgrading to 16.3.1).
