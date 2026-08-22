@@ -87,7 +87,7 @@ Never commit a real `.env` file to Git — only commit `.env.example`.
 2. Add `vi`/`en` localization in `payload.config.ts`, mark which fields need translation (`localized: true`).
 3. Add Giscus to the post-detail template (a dedicated component in `components/`, embedded in the Post detail page).
 4. Review/tune `plugin-seo` for actual needs (default meta, OG image).
-5. Write the VPS deploy process: build → run Next.js with PM2 (since there's a server/API part, not a static site) → reverse proxy via Nginx/Caddy → dedicated Postgres on the VPS or a managed DB.
+5. ~~Write the VPS deploy process~~ — done, see [docs/deploy-vps.md](docs/deploy-vps.md). Remaining: actually provision the VPS/domain and run through the go-live checklist.
 
 ## Code conventions
 
