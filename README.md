@@ -83,3 +83,7 @@ pnpm dev
 
 - Frontend: http://localhost:3000
 - Admin: http://localhost:3000/admin
+
+## Going live
+
+Full plan for deploying to a VPS, CI/CD with GitHub Actions, domain/hosting shopping list, backups, and a go-live checklist: see [docs/deploy-vps.md](./docs/deploy-vps.md).
