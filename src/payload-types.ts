@@ -72,6 +72,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    authors: Author;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -84,6 +85,9 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    users: {
+      authorNames: 'authors';
+    };
     'payload-folders': {
       documentsAndFolders: 'payload-folders' | 'media';
     };
@@ -94,6 +98,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    authors: AuthorsSelect<false> | AuthorsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -112,10 +117,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    maintenance: Maintenance;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    maintenance: MaintenanceSelect<false> | MaintenanceSelect<true>;
   };
   locale: null;
   widgets: {
@@ -254,13 +261,14 @@ export interface Post {
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (number | User)[] | null;
-  populatedAuthors?:
-    | {
-        id?: string | null;
-        name?: string | null;
-      }[]
-    | null;
+  /**
+   * The main writer of this post.
+   */
+  primaryAuthor: number | Author;
+  /**
+   * Other authors who collaborated on this post.
+   */
+  collaborators?: (number | Author)[] | null;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
@@ -414,12 +422,39 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * Pen names shown as the byline on posts. Each one belongs to a User account.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors".
+ */
+export interface Author {
+  id: number;
+  name: string;
+  /**
+   * Which login account this pen name belongs to.
+   */
+  user: number | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  /**
+   * Internal name, used for account management only — not shown to readers.
+   */
   name?: string | null;
+  /**
+   * Pen names linked to this account. Add or edit them in the Authors collection.
+   */
+  authorNames?: {
+    docs?: (number | Author)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -983,6 +1018,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'authors';
+        value: number | Author;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: number | Redirect;
       } | null)
@@ -1197,13 +1236,8 @@ export interface PostsSelect<T extends boolean = true> {
         description?: T;
       };
   publishedAt?: T;
-  authors?: T;
-  populatedAuthors?:
-    | T
-    | {
-        id?: T;
-        name?: T;
-      };
+  primaryAuthor?: T;
+  collaborators?: T;
   generateSlug?: T;
   slug?: T;
   updatedAt?: T;
@@ -1330,6 +1364,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  authorNames?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1346,6 +1381,16 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors_select".
+ */
+export interface AuthorsSelect<T extends boolean = true> {
+  name?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1693,6 +1738,20 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * Toggle this on to show a maintenance page to everyone except logged-in admins, while you update the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance".
+ */
+export interface Maintenance {
+  id: number;
+  enabled?: boolean | null;
+  title?: string | null;
+  message?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -1742,6 +1801,18 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance_select".
+ */
+export interface MaintenanceSelect<T extends boolean = true> {
+  enabled?: T;
+  title?: T;
+  message?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1813,6 +1884,23 @@ export interface CodeBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'code';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableOfContentsBlock".
+ */
+export interface TableOfContentsBlock {
+  /**
+   * Shown as the heading above the list of links. Leave empty to hide it.
+   */
+  title?: string | null;
+  /**
+   * How the table of contents is styled on the page.
+   */
+  style: 'box' | 'plain';
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tableOfContents';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
