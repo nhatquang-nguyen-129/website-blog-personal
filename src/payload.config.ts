@@ -4,6 +4,7 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
+import { Authors } from './collections/Authors'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -11,6 +12,7 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
+import { Maintenance } from './Maintenance/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
@@ -29,6 +31,10 @@ export default buildConfig({
       beforeDashboard: ['@/components/BeforeDashboard'],
       // Adds a "Go to site" button to the top-right of every admin view.
       actions: ['@/components/GoToSite'],
+      // Replaces the Payload wordmark on the login screen with the Header global's brand (text or image).
+      graphics: {
+        Logo: '@/components/AdminLogo',
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -64,9 +70,9 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Media, Categories, Users, Authors],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
+  globals: [Header, Footer, Maintenance],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
