@@ -15,12 +15,13 @@ const collections: CollectionSlug[] = [
   'media',
   'pages',
   'posts',
+  'authors',
   'forms',
   'form-submissions',
   'search',
 ]
 
-const globals: GlobalSlug[] = ['header', 'footer']
+const globals = ['header', 'footer'] as const satisfies GlobalSlug[]
 
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
 
@@ -138,6 +139,16 @@ export const seed = async ({
     ),
   ])
 
+  payload.logger.info(`— Seeding author pen name...`)
+
+  const demoAuthorName = await payload.create({
+    collection: 'authors',
+    data: {
+      name: 'Demo Author',
+      user: demoAuthor.id,
+    },
+  })
+
   payload.logger.info(`— Seeding posts...`)
 
   // Do not create posts with `Promise.all` because we want the posts to be created in order
@@ -148,7 +159,7 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthor }),
+    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthorName }),
   })
 
   const post2Doc = await payload.create({
@@ -157,7 +168,7 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthor }),
+    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthorName }),
   })
 
   const post3Doc = await payload.create({
@@ -166,7 +177,7 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthor }),
+    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthorName }),
   })
 
   // update each post with related posts
