@@ -8,25 +8,35 @@ RUN apt-get update && apt-get install -y \
     unzip \
     less \
     rsync \
+    libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------------------------
-# 2. Apache config
+# 2. PHP extensions required by WordPress (mysqli for DB, gd for images, zip for plugin installs)
+# --------------------------------------------------
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j"$(nproc)" mysqli pdo_mysql gd zip
+
+# --------------------------------------------------
+# 3. Apache config
 # --------------------------------------------------
 RUN a2enmod rewrite
 
 # --------------------------------------------------
-# 3. Set web root
+# 4. Set web root
 # --------------------------------------------------
 WORKDIR /var/www/html
 
 # --------------------------------------------------
-# 4. Copy public folder (contains wp-content/mu-plugins)
+# 5. Copy public folder (contains wp-content/mu-plugins)
 # --------------------------------------------------
 COPY public/ /var/www/html/
 
 # --------------------------------------------------
-# 5. Download WordPress core + merge wp-content correctly
+# 6. Download WordPress core + merge wp-content correctly
 # --------------------------------------------------
 RUN curl -o /tmp/wordpress.zip https://wordpress.org/latest.zip \
  && unzip /tmp/wordpress.zip -d /tmp \
@@ -42,7 +52,12 @@ RUN curl -o /tmp/wordpress.zip https://wordpress.org/latest.zip \
  && rm -rf /tmp/wordpress /tmp/wordpress.zip
 
 # --------------------------------------------------
-# 6. Permissions
+# 7. wp-config.php (reads DB_* from environment at runtime — see docker-compose.yml)
+# --------------------------------------------------
+COPY docker/wp-config.docker.php /var/www/html/wp-config.php
+
+# --------------------------------------------------
+# 8. Permissions
 # --------------------------------------------------
 RUN chown -R www-data:www-data /var/www/html
 
