@@ -10,10 +10,8 @@ import { Media } from '@/components/Media'
 import { formatAuthors } from '@/utilities/formatAuthors'
 import { formatDateTime } from '@/utilities/formatDateTime'
 
-export type CardPostData = Pick<
-  Post,
-  'slug' | 'categories' | 'meta' | 'title' | 'publishedAt' | 'populatedAuthors'
->
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'publishedAt'> &
+  Partial<Pick<Post, 'primaryAuthor' | 'collaborators'>>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -26,7 +24,7 @@ export const Card: React.FC<{
   const { card, link } = useClickableCard({})
   const { className, doc, relationTo, showCategories, title: titleFromProps } = props
 
-  const { slug, categories, meta, title, publishedAt, populatedAuthors } = doc || {}
+  const { slug, categories, meta, title, publishedAt, primaryAuthor, collaborators } = doc || {}
   const { description, image: metaImage } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
@@ -34,8 +32,7 @@ export const Card: React.FC<{
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
 
-  const authorNames =
-    populatedAuthors && populatedAuthors.length > 0 ? formatAuthors(populatedAuthors) : ''
+  const authorNames = formatAuthors(primaryAuthor, collaborators)
 
   return (
     <article
