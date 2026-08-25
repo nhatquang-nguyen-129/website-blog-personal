@@ -25,7 +25,8 @@ export default async function Page() {
       categories: true,
       meta: true,
       publishedAt: true,
-      populatedAuthors: true,
+      primaryAuthor: true,
+      collaborators: true,
     },
   })
 
@@ -60,6 +61,6 @@ export default async function Page() {
 
 export function generateMetadata(): Metadata {
   return {
-    title: `Payload Website Template Posts`,
+    title: `Posts | Personal Blog`,
   }
 }
