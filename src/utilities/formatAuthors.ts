@@ -1,24 +1,27 @@
-import { Post } from '@/payload-types'
+import { Author } from '@/payload-types'
+
+const nameOf = (author: Author | number | null | undefined) =>
+  typeof author === 'object' && author !== null ? author.name : undefined
 
 /**
- * Formats an array of populatedAuthors from Posts into a prettified string.
- * @param authors - The populatedAuthors array from a Post.
- * @returns A prettified string of authors.
+ * Formats a post's primary author + collaborators into a prettified byline.
  * @example
  *
- * [Author1, Author2] becomes 'Author1 and Author2'
- * [Author1, Author2, Author3] becomes 'Author1, Author2, and Author3'
- *
+ * primary only -> 'Author1'
+ * primary + 1 collaborator -> 'Author1 and Author2'
+ * primary + 2 collaborators -> 'Author1, Author2, and Author3'
  */
 export const formatAuthors = (
-  authors: NonNullable<NonNullable<Post['populatedAuthors']>[number]>[],
+  primaryAuthor: Author | number | null | undefined,
+  collaborators?: (Author | number | null)[] | null,
 ) => {
-  // Ensure we don't have any authors without a name
-  const authorNames = authors.map((author) => author.name).filter(Boolean)
+  const names = [nameOf(primaryAuthor), ...(collaborators || []).map(nameOf)].filter(
+    (name): name is string => Boolean(name),
+  )
 
-  if (authorNames.length === 0) return ''
-  if (authorNames.length === 1) return authorNames[0]
-  if (authorNames.length === 2) return `${authorNames[0]} and ${authorNames[1]}`
+  if (names.length === 0) return ''
+  if (names.length === 1) return names[0]
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
 
-  return `${authorNames.slice(0, -1).join(', ')} and ${authorNames[authorNames.length - 1]}`
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
 }
