@@ -9,7 +9,7 @@ export const post3: (args: PostArgs) => RequiredDataFromCollectionSlug<'posts'> 
   return {
     slug: 'dollar-and-sense-the-financial-forecast',
     _status: 'published',
-    authors: [author],
+    primaryAuthor: author.id,
     content: {
       root: {
         type: 'root',
