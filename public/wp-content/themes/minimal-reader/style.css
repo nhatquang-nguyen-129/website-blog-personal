@@ -1,0 +1,12 @@
+/*
+Theme Name: Minimal Reader
+Description: A minimal, writing-first theme in the spirit of Substack — one centered reading column, serif body text, a single warm-orange accent, and a flicker-free dark mode. Built to match this project's earlier Payload/Next.js frontend design system.
+Author: Personal Blog
+Version: 1.0.0
+Requires PHP: 8.0
+Text Domain: minimal-reader
+*/
+
+/* All actual styling lives in assets/css/style.css (enqueued in functions.php)
+   so it can be organized into normal files instead of one giant stylesheet;
+   this file only needs to exist for WordPress to recognize the theme. */
