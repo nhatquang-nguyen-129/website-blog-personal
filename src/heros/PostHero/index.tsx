@@ -9,10 +9,10 @@ import { formatAuthors } from '@/utilities/formatAuthors'
 export const PostHero: React.FC<{
   post: Post
 }> = ({ post }) => {
-  const { categories, heroImage, populatedAuthors, publishedAt, title } = post
+  const { categories, collaborators, heroImage, primaryAuthor, publishedAt, title } = post
 
-  const hasAuthors =
-    populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
+  const authorsText = formatAuthors(primaryAuthor, collaborators)
+  const hasAuthors = authorsText !== ''
 
   return (
     <div className="pb-8">
@@ -45,7 +45,7 @@ export const PostHero: React.FC<{
           </h1>
 
           <div className="flex flex-wrap items-center gap-3 border-b border-border pb-8 text-sm text-muted-foreground">
-            {hasAuthors && <span className="text-foreground">{formatAuthors(populatedAuthors)}</span>}
+            {hasAuthors && <span className="text-foreground">{authorsText}</span>}
             {hasAuthors && publishedAt && <span aria-hidden>&middot;</span>}
             {publishedAt && <time dateTime={publishedAt}>{formatDateTime(publishedAt)}</time>}
           </div>
