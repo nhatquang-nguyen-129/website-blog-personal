@@ -22,9 +22,13 @@ public/wp-content/uploads/
 public/wp-content/cache/
 public/wp-content/debug.log
 
-# WordPress content exclude mu-plugins
+# WordPress content: track our own mu-plugins and theme, ignore everything else
+# (bundled default themes like twentytwentyfive are re-downloaded by the Dockerfile, not version-controlled)
 public/wp-content/*
 !public/wp-content/mu-plugins/
+!public/wp-content/themes/
+public/wp-content/themes/*
+!public/wp-content/themes/minimal-reader/
 
 # Nodes
 node_modules/
