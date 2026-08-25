@@ -2,20 +2,23 @@ import type { CollectionConfig } from 'payload'
 
 import {
   BlocksFeature,
+  defaultColors,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  TextStateFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
+import { Content } from '../../blocks/Content/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+import { TableOfContents } from '../../blocks/TableOfContents/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
-import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 
 import {
@@ -89,10 +92,16 @@ export const Posts: CollectionConfig<'posts'> = {
                   return [
                     ...rootFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
+                    BlocksFeature({ blocks: [Banner, Code, MediaBlock, TableOfContents, Content] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),
+                    TextStateFeature({
+                      state: {
+                        color: defaultColors.text,
+                        background: defaultColors.background,
+                      },
+                    }),
                   ]
                 },
               }),
@@ -182,43 +191,52 @@ export const Posts: CollectionConfig<'posts'> = {
       },
     },
     {
-      name: 'authors',
+      name: 'primaryAuthor',
       type: 'relationship',
       admin: {
+        description: 'The main writer of this post.',
         position: 'sidebar',
       },
-      hasMany: true,
-      relationTo: 'users',
+      label: 'Author',
+      relationTo: 'authors',
+      required: true,
     },
-    // This field is only used to populate the user data via the `populateAuthors` hook
-    // This is because the `user` collection has access control locked to protect user privacy
-    // GraphQL will also not return mutated user data that differs from the underlying schema
     {
-      name: 'populatedAuthors',
-      type: 'array',
-      access: {
-        update: () => false,
-      },
+      name: 'collaborators',
+      type: 'relationship',
       admin: {
-        disabled: true,
-        readOnly: true,
+        description: 'Other authors who collaborated on this post.',
+        position: 'sidebar',
       },
-      fields: [
-        {
-          name: 'id',
-          type: 'text',
+      filterOptions: ({ siblingData }) => {
+        const primaryAuthor = (siblingData as { primaryAuthor?: number | string })?.primaryAuthor
+
+        if (!primaryAuthor) return true
+
+        return {
+          id: {
+            not_equals: primaryAuthor,
+          },
+        }
+      },
+      hasMany: true,
+      label: 'Collaboration',
+      relationTo: 'authors',
+    },
+    {
+      name: 'headingOutline',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/collections/Posts/components/HeadingOutline#HeadingOutline',
         },
-        {
-          name: 'name',
-          type: 'text',
-        },
-      ],
+        position: 'sidebar',
+      },
     },
     slugField(),
   ],
   hooks: {
     afterChange: [revalidatePost],
-    afterRead: [populateAuthors],
     afterDelete: [revalidateDelete],
   },
   versions: {
