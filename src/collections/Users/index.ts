@@ -20,6 +20,20 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
+      admin: {
+        description: 'Internal name, used for account management only — not shown to readers.',
+      },
+    },
+    {
+      name: 'authorNames',
+      type: 'join',
+      admin: {
+        description:
+          'Pen names linked to this account. Add or edit them in the Authors collection.',
+      },
+      collection: 'authors',
+      label: 'Author Names',
+      on: 'user',
     },
   ],
   timestamps: true,
