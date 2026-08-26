@@ -230,15 +230,6 @@ a {
   padding-block: 3rem 2rem;
 }
 
-.post-hero__category {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-
 .post-hero__title {
   margin: 0 0 1.5rem;
   font-family: var(--font-serif);
@@ -251,21 +242,6 @@ a {
   .post-hero__title {
     font-size: 3rem;
   }
-}
-
-.post-hero__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-}
-
-.post-hero__meta .author {
-  color: var(--foreground);
 }
 
 .post-hero__image {
