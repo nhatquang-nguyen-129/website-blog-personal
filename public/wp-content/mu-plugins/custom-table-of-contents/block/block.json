@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "minimal-reader/table-of-contents",
+    "title": "Table of Contents",
+    "category": "design",
+    "icon": "list-view",
+    "description": "An auto-generated list of links to this post's headings. Nothing to configure — just insert it where you want it to appear.",
+    "textdomain": "table-of-contents",
+    "supports": {
+        "html": false,
+        "multiple": false
+    },
+    "attributes": {
+        "title": {
+            "type": "string",
+            "default": "Mục lục"
+        }
+    },
+    "editorScript": "file:./editor.js",
+    "render": "file:./render.php"
+}
