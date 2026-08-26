@@ -27,7 +27,7 @@ get_header();
                     <div class="post-list__meta">
                         <?php echo esc_html(get_the_date()); ?>
                     </div>
-                    <p class="post-list__excerpt"><?php the_excerpt(); ?></p>
+                    <div class="post-list__excerpt"><?php the_excerpt(); ?></div>
                 </article>
             <?php endwhile; ?>
         </div>
