@@ -21,6 +21,14 @@ function mlr_theme_setup() {
         'primary' => __('Primary Menu', 'minimal-reader'),
         'footer'  => __('Footer Menu', 'minimal-reader'),
     ));
+
+    // So blocks (e.g. the Table of Contents block) look right in the editor too, not just on the frontend.
+    // A dedicated file, NOT style.css: that one's flicker-prevention rule
+    // hides <html> until the frontend's inline script sets data-theme, which
+    // never runs inside the editor's iframe — loading it there left the
+    // whole canvas permanently invisible.
+    add_theme_support('editor-styles');
+    add_editor_style('assets/css/editor.css');
 }
 
 add_action('wp_enqueue_scripts', 'mlr_enqueue_assets');
