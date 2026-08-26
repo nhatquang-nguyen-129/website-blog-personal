@@ -1,0 +1,48 @@
+/* Styles for the block's InspectorControls panel — this renders in the
+   outer editor chrome (the sidebar), not inside the content iframe, so it
+   can't rely on the theme's add_editor_style() (which only reaches the
+   iframe). Enqueued separately via enqueue_block_editor_assets. */
+
+.mlfc-help {
+    margin: 0 0 0.75rem;
+    font-size: 12px;
+    color: #757575;
+}
+
+.mlfc-post-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mlfc-post-list__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: grab;
+}
+
+.mlfc-post-list__item.is-dragging {
+    opacity: 0.4;
+}
+
+.mlfc-post-list__handle {
+    color: #757575;
+    line-height: 1;
+}
+
+.mlfc-post-list__title {
+    flex: 1;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mlfc-warning {
+    font-size: 13px;
+    font-style: italic;
+    color: #b45309;
+}

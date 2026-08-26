@@ -678,104 +678,26 @@ a {
   color: var(--primary);
 }
 
-/* ---------- Home page (page-templates/template-home.php) ---------- */
+/* ---------- Blank Canvas page template + block alignment ---------- */
 
-.home-hero {
-  padding-block: 4rem 1rem;
-  text-align: center;
-}
-
-.home-hero__title {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-serif);
-  font-size: 2.5rem;
-  font-weight: 600;
-}
-
-@media (min-width: 48rem) {
-  .home-hero__title {
-    font-size: 3.25rem;
-  }
-}
-
-.home-hero__tagline {
-  margin: 0 0 1.5rem;
-  font-size: 1.125rem;
-  color: var(--muted-foreground);
-}
-
-.home-hero__intro {
-  max-width: 38rem;
+.page-canvas {
+  width: 100%;
+  max-width: var(--wide-width);
   margin-inline: auto;
-  text-align: left;
-  font-family: var(--font-serif);
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  color: var(--foreground);
+  padding-inline: 1.5rem;
 }
 
-.home-hero__intro > * + * {
-  margin-top: 1em;
+.page-canvas .alignwide {
+  max-width: 80rem;
+  margin-inline: calc(50% - 40rem);
 }
 
-.home-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  padding-block: 3rem;
-  border-top: 1px solid var(--border);
+.page-canvas .alignfull {
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
 }
 
-.home-feed__item {
-  padding-bottom: 2.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.home-feed__item:last-child {
-  border-bottom: none;
-}
-
-.home-feed__title {
-  margin: 0 0 0.5rem;
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.home-feed__title a {
-  text-decoration: none;
-  color: var(--foreground);
-}
-
-.home-feed__title a:hover {
-  color: var(--primary);
-}
-
-.home-feed__meta {
-  margin-bottom: 0.5rem;
-  font-size: 0.8125rem;
-  color: var(--muted-foreground);
-}
-
-.home-feed__excerpt {
-  margin: 0;
-  color: var(--muted-foreground);
-  line-height: 1.6;
-}
-
-.home-feed__more {
-  text-align: center;
-  padding-bottom: 3rem;
-}
-
-.home-feed__more a {
-  text-decoration: none;
-  color: var(--primary);
-  font-weight: 600;
-}
-
-/* ---------- Home hero carousel (pinned = native WP Sticky Posts) ---------- */
+/* ---------- Featured Carousel block (custom-featured-carousel plugin) ---------- */
 
 .home-carousel {
   position: relative;
@@ -783,8 +705,49 @@ a {
 }
 
 .home-carousel__viewport {
+  position: relative;
   overflow: hidden;
   width: 100%;
+}
+
+.home-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: color-mix(in oklab, black 45%, transparent);
+  color: white;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.home-carousel__arrow:hover {
+  background: color-mix(in oklab, black 65%, transparent);
+}
+
+.home-carousel__arrow--prev {
+  left: 1rem;
+}
+
+.home-carousel__arrow--next {
+  right: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .home-carousel__arrow--prev {
+    left: 1.5rem;
+  }
+  .home-carousel__arrow--next {
+    right: 1.5rem;
+  }
 }
 
 .home-carousel__track {
@@ -888,31 +851,83 @@ a {
   background: white;
 }
 
-/* ---------- Home category quick-nav ---------- */
+/* ---------- Core blocks (Query Loop, Categories, Post fields) ----------
+   Default styling so a page assembled from WordPress's own blocks already
+   matches the site's look, with no theme-specific class names required. */
 
-.home-cat-nav {
+.wp-block-post-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.wp-block-post-title a {
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.wp-block-post-title a:hover {
+  color: var(--primary);
+}
+
+.wp-block-post-excerpt__excerpt {
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+.wp-block-post-date {
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
+.wp-block-post-author {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.wp-block-post-template {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.wp-block-post-template > li {
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  list-style: none;
+}
+
+.wp-block-post-template > li:last-child {
+  border-bottom: none;
+}
+
+.wp-block-categories-list,
+ul.wp-block-categories {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding-top: 2.5rem;
+  padding-left: 0;
 }
 
-.home-cat-nav__item {
+.wp-block-categories-list li,
+ul.wp-block-categories li {
+  list-style: none;
+}
+
+.wp-block-categories-list a,
+ul.wp-block-categories a {
+  display: inline-block;
   padding: 0.375rem 0.875rem;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 4px);
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   text-decoration: none;
   color: var(--muted-foreground);
 }
 
-.home-cat-nav__item:hover {
+.wp-block-categories-list a:hover,
+ul.wp-block-categories a:hover {
   border-color: var(--primary);
   color: var(--primary);
-}
-
-.home-cat-nav__item.is-active {
-  background: var(--foreground);
-  border-color: var(--foreground);
-  color: var(--background);
 }
