@@ -1,6 +1,6 @@
-# multilingual-post
+# custom-multilingual-post
 
-**Location:** `public/wp-content/mu-plugins/multilingual-post.php` (loader) + `public/wp-content/mu-plugins/multilingual-post/` (implementation)
+**Location:** `public/wp-content/mu-plugins/custom-multilingual-post.php` (loader) + `public/wp-content/mu-plugins/custom-multilingual-post/` (implementation)
 **Type:** MU-plugin (always active, not togglable from the Plugins screen)
 
 ## What it is — and isn't
@@ -54,25 +54,27 @@ sibling yet, the original simply renders as-is.
 
 ## Editing workflow
 
+One **Multilingual** panel in the post-edit sidebar (a real Gutenberg
+`PluginDocumentSettingPanel`, built with the same components — `SelectControl`,
+`Button`, `Notice` — WordPress's own panels use, not a classic metabox) covers
+the whole workflow:
+
 1. Write the post in your primary language, save/publish normally. On first
    save it becomes the group's `_ml_is_original` post (this only happens once
-   a translation is actually added — see below — not just from opening the
-   editor).
-2. In the **Multilingual Versions** box (post-edit sidebar), pick a language
-   from the "Add translation…" dropdown and click **Add**. This clones the
-   current post (title, content, excerpt, featured image, taxonomy terms)
-   into a new **draft** in that language, tagged into the same group, and
-   jumps you to its editor.
+   a translation is actually added, not just from opening the editor).
+2. In the panel, the **Language** dropdown sets the post's own `_ml_lang`
+   (saved as ordinary post meta — part of the normal Save/Update, no separate
+   button). Below it, every post already in the group is listed with its
+   status; pick a language from **Add translation** and click **Add** to
+   clone the current post (title, content, excerpt, featured image, taxonomy
+   terms) into a new **draft** in that language, tagged into the same group,
+   and jump straight to its editor.
 3. Translate the draft by hand, then publish it. From that point on, readers
    see a language toggle on the canonical URL and can switch to it.
 
-The **Post Language** box (a separate metabox) sets/edits a post's own
-`_ml_lang` — used both for the dropdown above and for the frontend toggle
-label.
-
-A language can only exist once per group — the "Add translation…" dropdown
-only lists languages the group doesn't already have, and the server-side
-duplication also refuses to create a second one.
+A language can only exist once per group — **Add translation** only lists
+languages the group doesn't already have, and the server-side duplication
+also refuses to create a second one.
 
 ## Frontend: the `[language_switcher]` shortcode
 
@@ -90,32 +92,50 @@ Every link points at the *same* canonical (original) permalink — only
 `?lang=` differs. No JavaScript is required for the toggle to work; style
 `.mlp-language-switcher` / `.mlp-active` in the theme as needed.
 
+## Editor panel internals
+
+The sidebar UI is a REST-backed Gutenberg plugin, not a classic metabox:
+
+- `_ml_lang` is a properly `register_post_meta()`-registered field
+  (`show_in_rest => true`), so the **Language** dropdown just reads/writes it
+  through `wp.data`/`@wordpress/core-data` (`useEntityProp`) like any other
+  post field — it rides along with the editor's normal Save/Update, no custom
+  save handler needed.
+- Two custom REST routes back the rest of the panel: `GET /mlp/v1/groups/{id}`
+  (the group's posts + available languages, for the list and the "Add
+  translation" dropdown) and `POST /mlp/v1/translations` (`{post_id, lang}`,
+  calls `mlp_duplicate_post()` and returns the new draft's edit URL). Both
+  gate on `current_user_can( 'edit_post', $post_id )`; `wp.apiFetch`'s
+  automatic nonce handling covers the security layer classic-metabox code
+  would otherwise hand-roll with `wp_nonce_field()`/`check_ajax_referer()`.
+- The panel's JS (`admin/editor-panel.js`) is plain `wp.element.createElement`
+  calls against `@wordpress/components` — no JSX, no build step, same as the
+  Table of Contents block's editor UI.
+
 ## Security notes
 
-- The "Add translation" AJAX endpoint (`wp_ajax_mlp_create_translation`)
-  requires a per-post nonce and `current_user_can( 'edit_post', $post_id )`.
-- The `save_post` handler that writes `_ml_lang` requires the same nonce +
-  capability check, and bails out during autosave.
-- The admin JS for the "Add" button only loads on the post-edit screens
-  (`admin_footer-post.php` / `admin_footer-post-new.php`), not site-wide.
-- All frontend/admin output that includes a URL or user-influenced value goes
+- Both REST routes require `current_user_can( 'edit_post', $post_id )`.
+- `_ml_lang`'s `register_post_meta()` call has an `auth_callback` requiring
+  the same capability before it can be written via the REST API.
+- All frontend output that includes a URL or user-influenced value goes
   through `esc_url()` / `esc_html()` / `esc_attr()`.
 
 ## Files
 
 ```
-multilingual-post.php                    top-level MU loader (required by WP itself)
-multilingual-post/
-  multilingual-post.php                  internal loader — require order matters (languages → post-group → duplicate-post → language-resolver)
+custom-multilingual-post.php              top-level MU loader (required by WP itself)
+custom-multilingual-post/
+  custom-multilingual-post.php            internal loader — require order matters (languages → post-group → duplicate-post → language-resolver)
   core/
     languages.php                        supported language list + labels
     post-group.php                       group/original/lang lookups (the data layer)
     duplicate-post.php                   clone a post into a new-language draft
-    language-resolver.php                the same-URL mechanism: content swap, canonical redirect, hreflang
+    language-resolver.php                the same-URL mechanism: content swap, canonical redirect, hreflang, list-view de-duplication
   admin/
-    metabox-language.php                 "Post Language" metabox + save handler
-    metabox-translations.php             "Multilingual Versions" metabox (list + add-translation UI)
-    ajax-create-translation.php          AJAX endpoint + its admin JS
+    rest-api.php                         registers _ml_lang as REST-visible post meta + the two /mlp/v1/ REST routes
+    editor-panel.php                     enqueues the sidebar panel's JS/CSS on post-edit screens
+    editor-panel.js                      the "Multilingual" sidebar panel (PluginDocumentSettingPanel, vanilla JS)
+    editor-panel.css                     small styling for the translation list inside the panel
   frontend/
     language-switcher.php                [language_switcher] shortcode
 ```

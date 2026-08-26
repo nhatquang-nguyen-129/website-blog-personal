@@ -71,6 +71,31 @@ function mlp_swap_post_content_for_requested_lang($post, $query = null) {
     // No published sibling in that language — keep showing the original.
 }
 
+/**
+ * Translation posts (_ml_is_original = 0) are an editing convenience, not a
+ * second public entry — they must never show up as their own item in a list
+ * view (home, blog, archives, search), only the group's original post does.
+ * Any custom WP_Query built for a public list should merge this in too.
+ */
+function mlp_exclude_translations_meta_query() {
+    return array(
+        'relation' => 'OR',
+        array('key' => '_ml_is_original', 'compare' => 'NOT EXISTS'),
+        array('key' => '_ml_is_original', 'value' => '0', 'compare' => '!='),
+    );
+}
+
+add_action('pre_get_posts', 'mlp_hide_translations_from_list_views');
+function mlp_hide_translations_from_list_views($query) {
+    if (is_admin() || !$query->is_main_query() || $query->is_singular()) {
+        return;
+    }
+
+    $meta_query   = $query->get('meta_query') ?: array();
+    $meta_query[] = mlp_exclude_translations_meta_query();
+    $query->set('meta_query', $meta_query);
+}
+
 add_action('wp_head', 'mlp_hreflang_tags');
 function mlp_hreflang_tags() {
     if (!is_singular(array('post', 'page'))) {

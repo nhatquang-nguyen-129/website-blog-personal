@@ -12,9 +12,8 @@ require_once MLP_PATH . '/core/duplicate-post.php';
 require_once MLP_PATH . '/core/language-resolver.php';
 
 /** ADMIN */
-require_once MLP_PATH . '/admin/metabox-language.php';
-require_once MLP_PATH . '/admin/metabox-translations.php';
-require_once MLP_PATH . '/admin/ajax-create-translation.php';
+require_once MLP_PATH . '/admin/rest-api.php';
+require_once MLP_PATH . '/admin/editor-panel.php';
 
 /** FRONTEND */
 require_once MLP_PATH . '/frontend/language-switcher.php';
