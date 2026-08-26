@@ -55,15 +55,13 @@ function mlr_enqueue_assets() {
         true
     );
 
-    if (is_front_page() && is_page_template('page-templates/template-home.php')) {
-        wp_enqueue_script(
-            'mlr-home-carousel',
-            get_template_directory_uri() . '/assets/js/home-carousel.js',
-            array(),
-            wp_get_theme()->get('Version'),
-            true
-        );
-    }
+    wp_enqueue_script(
+        'mlr-header-interactions',
+        get_template_directory_uri() . '/assets/js/header-interactions.js',
+        array(),
+        wp_get_theme()->get('Version'),
+        true
+    );
 }
 
 /**
