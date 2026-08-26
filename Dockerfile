@@ -59,6 +59,11 @@ COPY docker/wp-config.docker.php /var/www/html/wp-config.php
 # --------------------------------------------------
 # 8. Permissions
 # --------------------------------------------------
-RUN chown -R www-data:www-data /var/www/html
+# wp-content/uploads isn't part of the WordPress core zip — it only gets
+# created the first time something is uploaded. Pre-create it here so it's
+# www-data-owned in the image; otherwise the wp_uploads named volume's first
+# mount picks up root ownership instead, and every upload 403s.
+RUN mkdir -p wp-content/uploads \
+ && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
