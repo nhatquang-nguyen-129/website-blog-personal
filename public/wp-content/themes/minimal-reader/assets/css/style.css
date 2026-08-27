@@ -1108,3 +1108,44 @@ ul.wp-block-categories a:hover {
 .post-tabs__empty {
   color: var(--muted-foreground);
 }
+
+.post-tabs__panel[aria-busy='true'] .post-tabs__list-wrap {
+  opacity: 0.5;
+}
+
+.post-tabs__pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+}
+
+.post-tabs__page {
+  min-width: 2rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.post-tabs__page:hover {
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.post-tabs__page.is-active {
+  background: var(--secondary);
+  color: var(--foreground);
+  cursor: default;
+}
+
+.post-tabs__page-dots {
+  padding: 0 0.25rem;
+  color: var(--muted-foreground);
+}
