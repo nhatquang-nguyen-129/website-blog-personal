@@ -169,7 +169,37 @@ a bug in the block — it's that the page containing it is no longer the one
 being displayed at the site's root URL. This applies to *any* block placed
 on that Page, not just the carousel.
 
-## Plugin integration points
+### Page-to-page transitions (no JS, no SPA router)
+
+This is a classic server-rendered theme — clicking a nav link is a real
+navigation, not a client-side route change like Substack's. Rather than
+building a JS router to fake that (a large, framework-shaped undertaking
+that doesn't fit a no-build-step classic theme), `style.css` opts into the
+browser-native **Cross-Document View Transitions API**:
+
+```css
+@view-transition {
+  navigation: auto;
+}
+```
+
+That's the entire mechanism — no JavaScript. A browser that supports it
+cross-fades between full-page navigations automatically; a browser that
+doesn't just treats `@view-transition` as an unknown at-rule and navigates
+normally. Nothing to feature-detect, nothing that can break. It's wrapped
+in `@media (prefers-reduced-motion: no-preference)`, so reduced-motion
+users get the same plain, instant navigation an unsupported browser would
+give them anyway.
+
+`.site-header` also gets a `view-transition-name`, so the browser morphs
+that one element across the navigation instead of cross-fading it away and
+back — it reads as staying in place while only the content below changes,
+closer to Substack's "just the tab changed" feel.
+
+If a future element should behave the same way (stay put while the page
+around it changes), give it its own unique `view-transition-name` inside
+that same media query block — names must be unique per page, so don't
+reuse `site-header`'s.
 
 - `[language_switcher]` shortcode (from `custom-multilingual-post`) is
   echoed directly in `single.php` when the post is part of a translation

@@ -90,6 +90,32 @@ a {
   max-width: var(--content-width);
 }
 
+/* ---------- View transitions (native, no JS) ----------
+   Cross-document View Transitions: opts every same-origin navigation into a
+   browser-native cross-fade instead of a hard page swap. Pure progressive
+   enhancement — @view-transition is just an unknown at-rule to a browser
+   that doesn't support it, so nothing to feature-detect and nothing that
+   can break. Skipped entirely under prefers-reduced-motion, which is also
+   how a browser that lacks support effectively behaves (a normal, instant
+   navigation), so there's no separate fallback to write. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.2s;
+  }
+
+  /* Named so the browser morphs this one element between pages instead of
+     cross-fading it away and back in — the header reads as staying in
+     place while only the content below it changes. */
+  .site-header {
+    view-transition-name: site-header;
+  }
+}
+
 /* ---------- Header ---------- */
 
 .site-header {
