@@ -47,16 +47,23 @@ if (!$posts) {
 >
     <div class="home-carousel__viewport">
         <div class="home-carousel__track" data-carousel-track>
-            <?php foreach ($posts as $p) :
+            <?php foreach ($posts as $index => $p) :
                 $has_image = has_post_thumbnail($p);
                 ?>
                 <a
                     class="home-carousel__slide<?php echo $has_image ? ' has-image' : ''; ?>"
                     href="<?php echo esc_url(get_permalink($p)); ?>"
-                    <?php if ($has_image) : ?>
-                        style="background-image:url('<?php echo esc_url(get_the_post_thumbnail_url($p, 'large')); ?>')"
-                    <?php endif; ?>
                 >
+                    <?php if ($has_image) :
+                        echo get_the_post_thumbnail($p, 'mlfc-carousel', array(
+                            'class'   => 'home-carousel__image',
+                            // Only the first slide is visible on load; the rest
+                            // only ever come into view after a manual/auto
+                            // advance, so they shouldn't compete for bandwidth
+                            // with it on initial page load.
+                            'loading' => $index === 0 ? 'eager' : 'lazy',
+                        ));
+                    endif; ?>
                     <span class="home-carousel__overlay">
                         <span class="home-carousel__label"><?php esc_html_e('Featured', 'featured-carousel'); ?></span>
                         <span class="home-carousel__title"><?php echo esc_html(get_the_title($p)); ?></span>

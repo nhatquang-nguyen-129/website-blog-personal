@@ -5,6 +5,18 @@ if (!defined('ABSPATH')) {
 
 define('MLFC_PATH', __DIR__);
 
+add_action('after_setup_theme', 'mlfc_register_image_size');
+function mlfc_register_image_size() {
+    // Hard-cropped to the carousel's own aspect ratio (32:9 desktop, cropped
+    // further to 21:9 on mobile via object-fit: cover in the theme's CSS) at
+    // a resolution wide enough not to visibly upscale in a full-bleed hero.
+    // WordPress's default 'large' size (1024px max, uncropped) was being
+    // used before — fine for single.php's narrower reading column, but
+    // stretched blurry here and cropped a different amount per post
+    // depending on that post's original image aspect ratio.
+    add_image_size('mlfc-carousel', 1600, 500, true);
+}
+
 add_action('init', 'mlfc_register_block');
 function mlfc_register_block() {
     // Registered explicitly (not via block.json's bare "editorScript") for

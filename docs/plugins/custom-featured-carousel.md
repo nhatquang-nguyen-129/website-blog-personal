@@ -24,6 +24,26 @@ There's no fallback data source (e.g. Sticky Posts) — the carousel only
 ever shows what you explicitly add, and renders nothing at all until you've
 added at least one post.
 
+## Featured image
+
+Each slide uses the post's own **Featured Image** — no separate carousel-only
+image to upload. WordPress auto-generates a dedicated `mlfc-carousel` image
+size (1600×500, hard-cropped, centered) from that same Featured Image the
+moment it's uploaded, so there's nothing to configure per-post.
+
+For the crop to look intentional rather than arbitrarily cut off, upload a
+Featured Image that's **at least 1600px wide and reasonably wide/landscape**
+(close to a 3:1 ratio) if you want control over what ends up in frame — a
+narrow portrait photo will have its sides cropped away to fill that shape.
+Posts with a narrower or smaller image still work, just with more of the
+frame decided by WordPress's centered crop rather than the photo's own
+framing.
+
+If a Featured Image was uploaded before this size existed, regenerate it
+(a "Regenerate Thumbnails" plugin, or `wp media regenerate` via WP-CLI) —
+otherwise WordPress falls back to scaling the next closest size up, which
+looks soft/blurry on a full-width slide.
+
 ## Choosing what to show
 
 In the block's sidebar, under **Featured posts**:
@@ -66,9 +86,17 @@ moment later:
   `WP_Query` from the `postIds` attribute (capped to 10, `orderby:
   post__in` to preserve the picked order, `ignore_sticky_posts: true` so
   WordPress doesn't quietly prepend an unrelated Sticky Post ahead of the
-  list), renders each as a slide (background image if the post has a
-  featured image, otherwise a plain accent-colored card), and stamps the
-  delay onto the wrapper. Returns nothing if `postIds` is empty.
+  list), renders each as a slide (the `mlfc-carousel`-sized Featured Image
+  as a real `<img>` if the post has one, otherwise a plain accent-colored
+  card), and stamps the delay onto the wrapper. Returns nothing if
+  `postIds` is empty. The image is a real `<img>` rather than a CSS
+  `background-image` specifically so it keeps WordPress's automatic
+  `srcset`/`sizes` responsive-image markup — a `background-image` never
+  gets that, so the browser would otherwise always fetch one fixed
+  resolution regardless of viewport size or pixel density.
+- `custom-featured-carousel.php` registers the `mlfc-carousel` image size
+  (1600×500, hard-cropped) on `after_setup_theme` — see "Featured image"
+  above.
 - `block/editor.js` — the sidebar UI: a URL field + Add button that
   resolves a pasted link to a post via `/wp/v2/posts/{id}` (numeric `?p=`
   links) or `/wp/v2/posts?slug=…` (pretty-permalink links), a
