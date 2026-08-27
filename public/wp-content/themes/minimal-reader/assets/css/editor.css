@@ -111,3 +111,19 @@
   margin: 0.5rem 0 0;
   padding-left: 1.25rem;
 }
+
+/* ---------- Post Tabs block preview ---------- */
+
+.mlpt-post-tabs-editor {
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--secondary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.mlpt-post-tabs-editor p {
+  margin: 0.5rem 0 0;
+  color: var(--muted-foreground);
+}

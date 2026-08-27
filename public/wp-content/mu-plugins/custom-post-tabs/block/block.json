@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "minimal-reader/post-tabs",
+    "title": "Post Tabs",
+    "category": "design",
+    "icon": "screenoptions",
+    "description": "A tabbed posts list — Latest and Discussions (most-commented) — switchable without a page reload.",
+    "textdomain": "post-tabs",
+    "supports": {
+        "html": false,
+        "align": ["wide", "full"],
+        "multiple": false
+    },
+    "attributes": {
+        "postsPerTab": {
+            "type": "number",
+            "default": 5
+        }
+    },
+    "editorScript": "file:./editor.js",
+    "render": "file:./render.php"
+}
