@@ -17,7 +17,7 @@ the UI.)
 > `/`, check **Settings → Reading**: "Your homepage displays" needs to be
 > **"A static page"** with that Page selected. This is a general WordPress
 > Reading Setting, not something specific to this block — see
-> [`docs/themes/minimal-reader.md`](../themes/minimal-reader.md#why-a-static-page-matters-settings--reading)
+> [`docs/themes/custom-minimal-reader.md`](../themes/custom-minimal-reader.md#why-a-static-page-matters-settings--reading)
 > for why.
 
 There's no fallback data source (e.g. Sticky Posts) — the carousel only

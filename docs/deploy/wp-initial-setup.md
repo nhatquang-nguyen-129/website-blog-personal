@@ -6,7 +6,7 @@ covers every future update.
 ## 1. Create the database
 
 cPanel → **MySQL Databases** (on 1Panel/iNET: Website Management →
-**MySQL Manager** — see `onepanel-setup.md`):
+**MySQL Manager** — see `inet-onepanel-setup.md`):
 
 1. Create a database (e.g. `youruser_blog`  — cPanel usually prefixes it
    with your account name).
@@ -28,7 +28,7 @@ deploy process — it only ever touches core files, never `wp-content/`, so
 it can never conflict with anything this repo manages.
 
 **If the panel has a one-click WordPress installer** (1Panel/iNET calls it
-**WordPress Manager** — see `onepanel-setup.md`; cPanel's equivalent is
+**WordPress Manager** — see `inet-onepanel-setup.md`; cPanel's equivalent is
 usually Softaculous): fine to use it just to get a clean WordPress core
 onto the server quickly. Its own generated `wp-config.php` gets thrown away
 in step 4 below regardless, so it doesn't matter that the installer manages
@@ -129,7 +129,7 @@ WordPress.org install. If that ever needs to change, remove that one line.
 Visit `https://yourdomain.com/wp-admin/install.php`, fill in site
 title/admin account — the same screen you already went through locally.
 
-Then, matching the local setup (see `docs/themes/minimal-reader.md` and
+Then, matching the local setup (see `docs/themes/custom-minimal-reader.md` and
 `docs/plugins/`):
 
 1. **Appearance → Themes** — activate `Minimal Reader`.
@@ -138,11 +138,11 @@ Then, matching the local setup (see `docs/themes/minimal-reader.md` and
    generates the real `.htaccess` rewrite rules; skipping it leaves plain
    `?p=123`-style URLs.
 3. **Pages** — create your Home and Blog pages (see
-   `docs/themes/minimal-reader.md`'s "blank canvas" section for how the
+   `docs/themes/custom-minimal-reader.md`'s "blank canvas" section for how the
    homepage is meant to be built from blocks), then **Settings → Reading**
    → "A static page" → pick them.
 4. Set **Settings → General** site title/tagline, and **Appearance → Menus**
-   for the header nav (see `docs/themes/minimal-reader.md`'s Header
+   for the header nav (see `docs/themes/custom-minimal-reader.md`'s Header
    section — it's empty until a menu is assigned to "Primary Menu").
 5. Sanity check: open a page, confirm no PHP errors/warnings appear and
    the theme's fonts/colors show up correctly (confirms `mu-plugins` and

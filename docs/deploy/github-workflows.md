@@ -145,7 +145,7 @@ Actions**:
 
 The public half of that same keypair goes on the server — on 1Panel that's
 Advanced Features → SSH Manager → Import SSH Key (see
-`onepanel-setup.md`); on most other panels it's appending to
+`inet-onepanel-setup.md`); on most other panels it's appending to
 `~/.ssh/authorized_keys` directly. The two path secrets exist specifically
 so this workflow file never has to hardcode (or guess at) this hosting
 account's actual directory layout — same principle as `docker/.env`

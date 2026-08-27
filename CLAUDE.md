@@ -36,7 +36,7 @@ WordPress download. Keep it that way.
      line into a template — that renders on every post whether the person
      writing it wanted it there or not, and duplicates a block WordPress
      already ships. (This exact mistake was made and reverted once in
-     `single.php` — see `docs/themes/minimal-reader.md`.)
+     `single.php` — see `docs/themes/custom-minimal-reader.md`.)
    - A list of posts → the core **Query Loop** block (`core/query` +
      `core/post-template`), configurable per-instance (count, order,
      filters, which fields show) entirely from the block's own UI. Don't
@@ -55,7 +55,7 @@ WordPress download. Keep it that way.
    - Presentation (colors, type, spacing, how something *looks*) → the
      **theme** (`minimal-reader`). Never ship CSS from a plugin for
      anything other than its own admin-only editor UI (see
-     `docs/themes/minimal-reader.md`'s note on `editor.css` vs. a plugin's own
+     `docs/themes/custom-minimal-reader.md`'s note on `editor.css` vs. a plugin's own
      `enqueue_block_editor_assets`-loaded stylesheet).
    - Behavior/data/a genuinely new capability WordPress doesn't have → a
      **plugin** (an MU-plugin under `wp-content/mu-plugins/`, following the
@@ -95,7 +95,7 @@ WordPress download. Keep it that way.
 ## Theme conventions
 
 - Classic PHP theme (`header.php`, `footer.php`, `single.php`, …) — not
-  Full Site Editing. See `docs/themes/minimal-reader.md` for the full reasoning and the
+  Full Site Editing. See `docs/themes/custom-minimal-reader.md` for the full reasoning and the
   file-by-file breakdown.
 - The homepage (and any Page using the "Blank Canvas" template) is meant to
   be assembled from blocks in the editor, not hardcoded in PHP. If asked to
@@ -106,12 +106,12 @@ WordPress download. Keep it that way.
   (`.wp-block-post-title`, `.wp-block-categories-list`, …), so a page built
   purely from blocks already matches the site.
 - Two separate editor stylesheets exist for a real reason — read the
-  "⚠️ Two separate stylesheets" section of `docs/themes/minimal-reader.md` before adding
+  "⚠️ Two separate stylesheets" section of `docs/themes/custom-minimal-reader.md` before adding
   `add_editor_style()` CSS or a block's own sidebar CSS.
 
 ## Where to look for more detail
 
-- `docs/themes/minimal-reader.md` — the theme's design system, template responsibilities,
+- `docs/themes/custom-minimal-reader.md` — the theme's design system, template responsibilities,
   the editor-CSS gotcha, and why "Settings → Reading → A static page"
   matters for the homepage.
 - `docs/plugins/*.md` — one per custom plugin.

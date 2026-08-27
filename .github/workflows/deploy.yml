@@ -2,7 +2,7 @@ name: Deploy to production
 
 # Only main deploys — branch_1x is where active work/testing happens and
 # never touches the live site. See docs/deploy/github-workflows.md's
-# "Which branch actually deploys" for why, and onepanel-setup.md for the
+# "Which branch actually deploys" for why, and inet-onepanel-setup.md for the
 # specifics of the hosting this targets.
 on:
   push:

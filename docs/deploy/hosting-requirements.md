@@ -11,7 +11,7 @@ mainstream provider gives you:
   cPanel; DirectAdmin/Plesk/1Panel equivalents exist for every step, just
   under different menu names. This project's actual iNET plan turned out to
   run on **1Panel** ("OnePanel") — see
-  [`onepanel-setup.md`](./onepanel-setup.md) for the concrete menu mapping
+  [`inet-onepanel-setup.md`](./inet-onepanel-setup.md) for the concrete menu mapping
   and one real gotcha)
 - A **Softaculous** or similar one-click WordPress installer (optional —
   see `wp-initial-setup.md` for why a *manual* core install is actually
@@ -72,7 +72,7 @@ covers two things this doc would otherwise have called out separately:
 
 Two "Quà tặng" (bonus gifts) come with it — a MyThemeShop theme bundle and
 Rank Math SEO Pro. The theme bundle isn't relevant (this project has its
-own theme, `minimal-reader` — see `docs/themes/minimal-reader.md`). Rank
+own theme, `minimal-reader` — see `docs/themes/custom-minimal-reader.md`). Rank
 Math SEO Pro is worth considering separately later: WordPress core has no
 built-in SEO/meta-tag editing, so unlike most things in this project's
 `docs/plugins/`, that's a real gap a plugin genuinely fills rather than
