@@ -1,11 +1,12 @@
-# Initial deploy (one-time)
+# WordPress initial setup (one-time)
 
-Do this once, when the domain first goes live. After this, `github-ci-cd.md`
+Do this once, when the domain first goes live. After this, `github-workflows.md`
 covers every future update.
 
 ## 1. Create the database
 
-cPanel → **MySQL Databases**:
+cPanel → **MySQL Databases** (on 1Panel/iNET: Website Management →
+**MySQL Manager** — see `onepanel-setup.md`):
 
 1. Create a database (e.g. `youruser_blog`  — cPanel usually prefixes it
    with your account name).
@@ -26,7 +27,14 @@ updater is a completely separate, WordPress-native path from this repo's
 deploy process — it only ever touches core files, never `wp-content/`, so
 it can never conflict with anything this repo manages.
 
-**If you have SSH:**
+**If the panel has a one-click WordPress installer** (1Panel/iNET calls it
+**WordPress Manager** — see `onepanel-setup.md`; cPanel's equivalent is
+usually Softaculous): fine to use it just to get a clean WordPress core
+onto the server quickly. Its own generated `wp-config.php` gets thrown away
+in step 4 below regardless, so it doesn't matter that the installer manages
+that file differently than this project would.
+
+**If you have SSH and no installer, or prefer doing it by hand:**
 
 ```bash
 cd ~/public_html   # or wherever the domain's document root is
@@ -62,7 +70,7 @@ checkout of those two folders onto the server, merged into the
 alongside is harmless; `minimal-reader` just needs to end up as the
 *active* theme, which happens in step 5).
 
-See `github-ci-cd.md` for exactly how to get those two folders onto the
+See `github-workflows.md` for exactly how to get those two folders onto the
 server (SSH+git+rsync, or FTP) — the mechanism is the same for this first
 deploy as for every deploy after it, so that doc covers it once rather than
 repeating it here.
@@ -140,4 +148,4 @@ Then, matching the local setup (see `docs/themes/minimal-reader.md` and
    the theme's fonts/colors show up correctly (confirms `mu-plugins` and
    `minimal-reader` both actually made it onto the server intact).
 
-From here on, updates flow through `github-ci-cd.md`.
+From here on, updates flow through `github-workflows.md`.

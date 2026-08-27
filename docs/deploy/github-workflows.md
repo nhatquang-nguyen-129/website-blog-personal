@@ -1,22 +1,43 @@
 # Syncing from GitHub to production
 
-Every deploy — including the first one in `initial-deploy.md` — is the
+Every deploy — including the first one in `wp-initial-setup.md` — is the
 same operation: get the current `public/wp-content/mu-plugins/` and
 `public/wp-content/themes/minimal-reader/` from this repo onto the live
 server, replacing whatever's there. Nothing else in the repo ever goes to
 the server, and nothing on the server outside those two folders is ever
 touched by a sync.
 
+## Which branch actually deploys
+
+This repo's branch model (see `README.md`): `branch_1x` is where active
+work happens — pushed to constantly, including half-finished experiments —
+and `main` is production, only ever updated by merging a reviewed
+`branch_1x` (via a PR, the same moment `CHANGELOG.md` gets a version cut).
+
+**The CI/CD workflow below triggers only on a push to `main`.** A push to
+`branch_1x` never touches the live site, by design — that branch is for
+building and testing locally (Docker), not for the production server to
+see. The live site only ever reflects whatever was last merged into `main`.
+If you ever see the workflow trigger on the wrong branch, that's a bug in
+the workflow file, not intended behavior.
+
+Optional but worth it once this is live: **Settings → Branches → add a
+protection rule for `main`** requiring a pull request before merging.
+Nothing here technically depends on it, but it turns "only a reviewed
+merge updates `main`" from a convention into something GitHub actually
+enforces, matching the "cut a version at merge time" workflow
+`CHANGELOG.md` already describes.
+
 ## What never gets touched by a sync — read this before setting anything up
 
-- `wp-config.php` — hand-created once in `initial-deploy.md`, holds real
+- `wp-config.php` — hand-created once in `wp-initial-setup.md`, holds real
   DB credentials and salts, never in git.
 - WordPress core (`wp-admin/`, `wp-includes/`, root PHP files) — installed
   once, updated only through wp-admin's own Dashboard → Updates.
 - `wp-content/uploads/` — real media, never in git.
 - `wp-content/plugins/`, other themes — not this repo's concern; also
   irrelevant in practice since `DISALLOW_FILE_MODS` (set in
-  `initial-deploy.md`) prevents installing anything there from
+  `wp-initial-setup.md`) prevents installing anything there from
   wp-admin anyway.
 - The database — content lives there, not in git (see `README.md`'s
   Content Strategy section).
@@ -77,7 +98,7 @@ name: Deploy to production
 
 on:
   push:
-    branches: [main]   # switch to branch_1x while that's still the active branch
+    branches: [main]   # production only — see "Which branch actually deploys" above
 
 jobs:
   deploy:
@@ -92,7 +113,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
           REMOTE_USER: ${{ secrets.DEPLOY_USER }}
           SOURCE: "public/wp-content/mu-plugins/"
-          TARGET: "/home/${{ secrets.DEPLOY_USER }}/public_html/wp-content/mu-plugins/"
+          TARGET: ${{ secrets.DEPLOY_MU_PLUGINS_PATH }}
           ARGS: "-avz --delete"
 
       - name: Deploy theme
@@ -102,16 +123,34 @@ jobs:
           REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
           REMOTE_USER: ${{ secrets.DEPLOY_USER }}
           SOURCE: "public/wp-content/themes/minimal-reader/"
-          TARGET: "/home/${{ secrets.DEPLOY_USER }}/public_html/wp-content/themes/minimal-reader/"
+          TARGET: ${{ secrets.DEPLOY_THEME_PATH }}
           ARGS: "-avz --delete"
 ```
 
-Set `DEPLOY_SSH_KEY` (a dedicated deploy keypair — generate with
-`ssh-keygen`, add the public half to the server's `~/.ssh/authorized_keys`,
-paste the private half into the secret, never commit either), `DEPLOY_HOST`,
-and `DEPLOY_USER` under the repo's **Settings → Secrets and variables →
-Actions**. Same principle as `docker/.env` already being gitignored locally
-— deploy credentials are configuration, never code.
+This is the actual file at `.github/workflows/deploy.yml` in this repo —
+not just a doc example. It won't run successfully until the secrets below
+are set, which is expected and harmless (a failed Action doesn't touch the
+live site).
+
+Set six secrets under the repo's **Settings → Secrets and variables →
+Actions**:
+
+| Secret | Value |
+|---|---|
+| `DEPLOY_SSH_KEY` | The **private** half of a dedicated deploy keypair — generate with `ssh-keygen -t ed25519 -C "github-actions-deploy"` (don't reuse your personal key). Never commit either half. |
+| `DEPLOY_HOST` | The server's hostname or IP. |
+| `DEPLOY_USER` | The SSH/hosting account username. |
+| `DEPLOY_MU_PLUGINS_PATH` | The absolute path to `wp-content/mu-plugins/` on the live server, trailing slash included. |
+| `DEPLOY_THEME_PATH` | The absolute path to `wp-content/themes/minimal-reader/` on the live server, trailing slash included. |
+
+The public half of that same keypair goes on the server — on 1Panel that's
+Advanced Features → SSH Manager → Import SSH Key (see
+`onepanel-setup.md`); on most other panels it's appending to
+`~/.ssh/authorized_keys` directly. The two path secrets exist specifically
+so this workflow file never has to hardcode (or guess at) this hosting
+account's actual directory layout — same principle as `docker/.env`
+already being gitignored locally: deploy-specific configuration is a
+secret, never something committed as code.
 
 ## Path B — FTP/SFTP only, no SSH
 

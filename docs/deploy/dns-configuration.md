@@ -1,12 +1,6 @@
-# Domain and DNS
+# DNS configuration
 
-## Buying a domain
-
-Any registrar works (Namecheap, GoDaddy, Vietnamese registrars like
-Mắt Bão/PA Vietnam/iNET, or the hosting provider itself if they sell
-domains too). Nothing here is WordPress-specific — the only thing that
-matters for the steps below is that you end up with access to that
-domain's **DNS settings**, wherever they're managed.
+Assumes a domain already bought — see `domain-registration.md` if not yet.
 
 ## Pointing the domain at the hosting
 
@@ -16,10 +10,11 @@ Two ways to do this — pick one, don't mix them:
 
 The hosting provider gives you nameservers (something like
 `ns1.yourhost.com` / `ns2.yourhost.com`, found in the cPanel welcome email
-or panel). Set those as your domain's nameservers at the registrar. DNS
-records (A record, MX, etc.) are then managed **in cPanel**, not at the
-registrar — cPanel auto-creates the right A record pointing at itself when
-you add the domain there.
+or panel — on 1Panel/iNET see `onepanel-setup.md`). Set those as your
+domain's nameservers at the registrar. DNS records (A record, MX, etc.) are
+then managed **in the hosting panel**, not at the registrar — it
+auto-creates the right A record pointing at itself when you add the domain
+there.
 
 Simplest option if you don't need any DNS-managed services outside the
 hosting (no separate email provider, no CDN in front). Good default for a
@@ -46,16 +41,16 @@ the hosting IP yet.
 
 ## Once it resolves: SSL and the WordPress site URL
 
-1. In cPanel, add the domain (if not done automatically) and run
+1. In the hosting panel, add the domain (if not done automatically) and run
    **AutoSSL** (or the host's equivalent) to issue a free Let's Encrypt
    certificate. Do this *before* finishing the WordPress install so the
    site address can be set to `https://` from the start — changing a live
    site's protocol after the fact means also updating `siteurl`/`home` in
    the database (`wp-admin` → Settings → General, or directly via SQL if
    the admin screen is unreachable).
-2. Force HTTPS: most cPanel setups have a "Force HTTPS Redirect" toggle
-   per domain (SSL/TLS Status page) — turn it on rather than hand-writing
-   `.htaccess` redirect rules.
+2. Force HTTPS: most panels have a "Force HTTPS Redirect" toggle per domain
+   (SSL/TLS Status page) — turn it on rather than hand-writing `.htaccess`
+   redirect rules.
 
-Next: `initial-deploy.md` to actually get WordPress running at that
+Next: `wp-initial-setup.md` to actually get WordPress running at that
 domain.
