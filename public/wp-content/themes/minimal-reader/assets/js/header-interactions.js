@@ -4,16 +4,38 @@
     var searchPanel = document.querySelector('[data-search-panel]');
 
     if (searchToggle && searchPanel) {
-      searchToggle.addEventListener('click', function () {
-        var isHidden = searchPanel.hasAttribute('hidden');
-        if (isHidden) {
-          searchPanel.removeAttribute('hidden');
-          var input = searchPanel.querySelector('input[type="search"]');
-          if (input) {
-            input.focus();
-          }
+      var closeSearch = function () {
+        searchPanel.classList.remove('is-open');
+        searchToggle.setAttribute('aria-expanded', 'false');
+      };
+
+      var openSearch = function () {
+        searchPanel.classList.add('is-open');
+        searchToggle.setAttribute('aria-expanded', 'true');
+        var input = searchPanel.querySelector('input[type="search"]');
+        if (input) {
+          input.focus();
+        }
+      };
+
+      searchToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (searchPanel.classList.contains('is-open')) {
+          closeSearch();
         } else {
-          searchPanel.setAttribute('hidden', '');
+          openSearch();
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (searchPanel.classList.contains('is-open') && !searchPanel.contains(e.target) && e.target !== searchToggle) {
+          closeSearch();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeSearch();
         }
       });
     }

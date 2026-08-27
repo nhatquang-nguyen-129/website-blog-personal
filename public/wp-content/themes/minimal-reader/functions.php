@@ -40,18 +40,23 @@ function mlr_enqueue_assets() {
         null
     );
 
+    // filemtime(), not the theme's static Version string — a hardcoded
+    // version number never changes across edits, so browsers keep serving a
+    // stale cached copy of these files after every change until it's bumped
+    // by hand. filemtime() busts the cache automatically on every save,
+    // same as every MU-plugin in this project already does.
     wp_enqueue_style(
         'mlr-style',
         get_template_directory_uri() . '/assets/css/style.css',
         array(),
-        wp_get_theme()->get('Version')
+        filemtime(get_template_directory() . '/assets/css/style.css')
     );
 
     wp_enqueue_script(
         'mlr-theme-toggle',
         get_template_directory_uri() . '/assets/js/theme-toggle.js',
         array(),
-        wp_get_theme()->get('Version'),
+        filemtime(get_template_directory() . '/assets/js/theme-toggle.js'),
         true
     );
 
@@ -59,7 +64,7 @@ function mlr_enqueue_assets() {
         'mlr-header-interactions',
         get_template_directory_uri() . '/assets/js/header-interactions.js',
         array(),
-        wp_get_theme()->get('Version'),
+        filemtime(get_template_directory() . '/assets/js/header-interactions.js'),
         true
     );
 }

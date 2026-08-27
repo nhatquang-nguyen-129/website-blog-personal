@@ -35,9 +35,15 @@ if (!defined('ABSPATH')) {
         </a>
 
         <div class="site-header__actions">
-            <button type="button" class="site-header__icon-btn" data-search-toggle aria-label="<?php esc_attr_e('Search', 'minimal-reader'); ?>">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </button>
+            <div class="site-header__search">
+                <div class="site-header__search-field" data-search-panel>
+                    <?php get_search_form(); ?>
+                </div>
+
+                <button type="button" class="site-header__icon-btn" data-search-toggle aria-haspopup="true" aria-expanded="false" aria-label="<?php esc_attr_e('Search', 'minimal-reader'); ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </div>
 
             <div class="site-header__share">
                 <button type="button" class="site-header__icon-btn" data-share-toggle aria-haspopup="true" aria-expanded="false" aria-label="<?php esc_attr_e('Share', 'minimal-reader'); ?>">
@@ -111,10 +117,4 @@ if (!defined('ABSPATH')) {
             ?>
         </nav>
     <?php endif; ?>
-
-    <div class="site-search-panel" data-search-panel hidden>
-        <div class="container">
-            <?php get_search_form(); ?>
-        </div>
-    </div>
 </header>

@@ -131,8 +131,10 @@ a {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 1rem;
+  max-width: none;
+  padding-inline: 1.5rem;
   padding-block: 1.25rem;
 }
 
@@ -142,15 +144,7 @@ a {
   font-weight: 600;
   text-decoration: none;
   color: var(--foreground);
-}
-
-@media (min-width: 40rem) {
-  .site-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-  }
+  white-space: nowrap;
 }
 
 .site-header__actions {
@@ -345,45 +339,76 @@ a {
   color: var(--foreground);
 }
 
-.site-search-panel {
-  border-top: 1px solid var(--border);
-  padding-block: 1rem;
+.site-header__search {
+  position: relative;
 }
 
-.site-search-panel[hidden] {
-  display: none;
-}
-
-.site-search-panel .search-form {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.site-search-panel .search-field {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
+.site-header__search-field {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 0.5rem);
+  transform: translateY(-50%);
+  width: 0;
+  max-width: calc(100vw - 2rem);
+  height: 2.25rem;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) + 4px);
   background: var(--background);
+  transition: width 0.25s ease, opacity 0.2s ease;
+}
+
+.site-header__search-field.is-open {
+  width: min(16rem, 70vw);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The pill's border/background live on the wrapper above, not on the
+   input — a single element animating its own width/border-radius, instead
+   of two separately-bordered controls (field + button) side by side. */
+.site-header__search-field .search-form,
+.site-header__search-field .search-form label {
+  display: flex;
+  height: 100%;
+}
+
+.site-header__search-field .search-form label {
+  flex: 1;
+  min-width: 0;
+}
+
+.site-header__search-field .search-field {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 1rem;
+  border: none;
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: 0.9375rem;
 }
 
-.site-search-panel .search-submit {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--secondary);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  cursor: pointer;
+.site-header__search-field .search-field:focus {
+  outline: none;
 }
 
-.site-search-panel .search-submit:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+/* Submit still works via Enter in the field — the button itself just
+   doesn't need its own visible "Search" box taking up the pill. Hidden
+   the accessible way (not display:none), so it stays in the tab order. */
+.site-header__search-field .search-submit {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---------- Footer ---------- */
