@@ -1,0 +1,40 @@
+name: Deploy to production
+
+# Only main deploys — branch_1x is where active work/testing happens and
+# never touches the live site. See docs/deploy/github-workflows.md's
+# "Which branch actually deploys" for why, and onepanel-setup.md for the
+# specifics of the hosting this targets.
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only these two directories ever reach production — see
+      # docs/deploy/github-workflows.md's "What never gets touched by a sync".
+      # Never widen SOURCE/TARGET here to all of wp-content/ or the
+      # document root: --delete would erase wp-content/uploads/ and
+      # anything else on the server that isn't in this repo.
+      - name: Deploy mu-plugins
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+          REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+          SOURCE: "public/wp-content/mu-plugins/"
+          TARGET: ${{ secrets.DEPLOY_MU_PLUGINS_PATH }}
+          ARGS: "-avz --delete"
+
+      - name: Deploy theme
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+          REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+          SOURCE: "public/wp-content/themes/minimal-reader/"
+          TARGET: ${{ secrets.DEPLOY_THEME_PATH }}
+          ARGS: "-avz --delete"
