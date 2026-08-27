@@ -10,7 +10,7 @@ Two ways to do this — pick one, don't mix them:
 
 The hosting provider gives you nameservers (something like
 `ns1.yourhost.com` / `ns2.yourhost.com`, found in the cPanel welcome email
-or panel — on 1Panel/iNET see `onepanel-setup.md`). Set those as your
+or panel — on 1Panel/iNET see `inet-onepanel-setup.md`). Set those as your
 domain's nameservers at the registrar. DNS records (A record, MX, etc.) are
 then managed **in the hosting panel**, not at the registrar — it
 auto-creates the right A record pointing at itself when you add the domain
@@ -23,12 +23,28 @@ personal blog.
 ### Option B — Keep DNS at the registrar (or a separate DNS provider like Cloudflare), point records manually
 
 Keep the registrar's (or Cloudflare's) nameservers, and add records
-yourself:
+yourself. This project's own domain+hosting (both at iNET) uses this
+option — see `inet-dns-setup.md` for the exact portal steps and iNET's own
+confirmed propagation time, since iNET's official guide doesn't offer
+nameserver delegation as an option at all.
 
 | Type | Host | Value | Purpose |
 |---|---|---|---|
 | A | `@` | the hosting server's IP address | `yourdomain.com` → hosting |
 | CNAME | `www` | `yourdomain.com` | `www.yourdomain.com` → same site |
+
+Why both records, not just the A record: `yourdomain.com` (the "root" or
+"apex" domain, host `@`) and `www.yourdomain.com` are two distinct hostnames
+as far as DNS is concerned — nothing makes one resolve from the other
+automatically. Without the CNAME, a visitor who types `www.yourdomain.com`
+gets no site at all (`NXDOMAIN`), even though the bare domain works fine.
+The CNAME points `www` at the root domain instead of duplicating the same IP
+in a second A record, so if the hosting server's IP ever changes, there's
+only one record (the A record) to update — the CNAME keeps following it
+automatically. Root-domain records technically can't be a CNAME per the DNS
+spec (a zone apex can't have a CNAME alongside its other required records,
+like MX), which is why the root uses an A record and only `www` uses a
+CNAME, never the other way around.
 
 Use this option if you want Cloudflare's proxy/CDN in front, or you're
 already using that registrar/provider's DNS for email (MX records) and
