@@ -115,4 +115,8 @@ WordPress download. Keep it that way.
   the editor-CSS gotcha, and why "Settings → Reading → A static page"
   matters for the homepage.
 - `docs/plugins/*.md` — one per custom plugin.
+- `docs/deploy/` — hosting, domain/DNS, and how a `git push` reaches
+  production. The same "core stays untouched, only `wp-content/mu-plugins/`
+  and `wp-content/themes/minimal-reader/` are ours" rule applies there too —
+  a deploy is never a wholesale copy of the repo onto the server.
 - `CHANGELOG.md` — what shipped and why, in the order it happened.

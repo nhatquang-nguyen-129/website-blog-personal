@@ -1,0 +1,143 @@
+# Initial deploy (one-time)
+
+Do this once, when the domain first goes live. After this, `github-ci-cd.md`
+covers every future update.
+
+## 1. Create the database
+
+cPanel → **MySQL Databases**:
+
+1. Create a database (e.g. `youruser_blog`  — cPanel usually prefixes it
+   with your account name).
+2. Create a database user with a strong, generated password.
+3. Add that user to that database with **All Privileges**.
+
+Write down: DB name, DB user, DB password, DB host (almost always
+`localhost` on shared hosting).
+
+## 2. Get WordPress core onto the server
+
+Locally, the `Dockerfile` always grabs whatever's currently "latest" at
+build time, because a container is disposable and gets rebuilt from
+scratch regularly. A **live site is not disposable** the same way — install
+a specific current version now, and let WordPress's own admin-dashboard
+updater handle core upgrades from then on (Dashboard → Updates). That
+updater is a completely separate, WordPress-native path from this repo's
+deploy process — it only ever touches core files, never `wp-content/`, so
+it can never conflict with anything this repo manages.
+
+**If you have SSH:**
+
+```bash
+cd ~/public_html   # or wherever the domain's document root is
+curl -O https://wordpress.org/latest.zip
+unzip latest.zip
+mv wordpress/* wordpress/.htaccess . 2>/dev/null; rmdir wordpress
+rm latest.zip
+```
+
+**If you don't have SSH** (FTP/cPanel File Manager only): download
+`https://wordpress.org/latest.zip` to your own machine, unzip it locally,
+and upload the contents of the `wordpress/` folder into the document root
+via FTP or cPanel's File Manager "Upload" — same end result, just through
+the browser/FTP client instead of `curl`+`unzip` on the server.
+
+Either way, you now have a stock WordPress install sitting in the document
+root — `wp-admin/`, `wp-includes/`, the root PHP files, and a default
+`wp-content/` — identical in spirit to what the `Dockerfile` produces
+locally before this repo's `wp-content` gets layered on.
+
+## 3. Layer this repo's `wp-content` on top
+
+Only two things from this repo ever go onto the live server:
+
+- `public/wp-content/mu-plugins/`
+- `public/wp-content/themes/minimal-reader/`
+
+Nothing else — not `wp-config.php`, not the root PHP files, not
+`wp-content/uploads/`. Get the current `branch_1x` (or `main`, once merged)
+checkout of those two folders onto the server, merged into the
+`wp-content/` that step 2 created (don't delete the default
+`wp-content/plugins/` or `wp-content/themes/twentytwenty*` — leaving them
+alongside is harmless; `minimal-reader` just needs to end up as the
+*active* theme, which happens in step 5).
+
+See `github-ci-cd.md` for exactly how to get those two folders onto the
+server (SSH+git+rsync, or FTP) — the mechanism is the same for this first
+deploy as for every deploy after it, so that doc covers it once rather than
+repeating it here.
+
+## 4. Create `wp-config.php`
+
+Not the same file as `docker/wp-config.docker.php` — that one has
+hardcoded placeholder salts and `WP_DEBUG` on, fine for a disposable local
+container, wrong for a public site. Copy `wp-config-sample.php` (came with
+WordPress core in step 2) to `wp-config.php` and set:
+
+```php
+define('DB_NAME', 'youruser_blog');
+define('DB_USER', 'youruser_blog');
+define('DB_PASSWORD', 'the real generated password');
+define('DB_HOST', 'localhost');
+define('DB_CHARSET', 'utf8mb4');
+define('DB_COLLATE', '');
+
+// Real, unique values — generate at https://api.wordpress.org/secret-key/1.1/salt/
+// and paste the whole block it gives you here, replacing these placeholders.
+define('AUTH_KEY',         'put a unique phrase here');
+define('SECURE_AUTH_KEY',  'put a unique phrase here');
+define('LOGGED_IN_KEY',    'put a unique phrase here');
+define('NONCE_KEY',        'put a unique phrase here');
+define('AUTH_SALT',        'put a unique phrase here');
+define('SECURE_AUTH_SALT', 'put a unique phrase here');
+define('LOGGED_IN_SALT',   'put a unique phrase here');
+define('NONCE_SALT',       'put a unique phrase here');
+
+$table_prefix = 'wp_';
+
+define('WP_DEBUG', false);
+
+// Hardening that also reinforces this project's own rule (CLAUDE.md): all
+// real changes go through git, never through the wp-admin file editor or
+// an ad-hoc plugin install. These make that the *only* way, not just the
+// convention.
+define('DISALLOW_FILE_EDIT', true);
+define('DISALLOW_FILE_MODS', true);
+
+if (!defined('ABSPATH')) {
+    define('ABSPATH', __DIR__ . '/');
+}
+
+require_once ABSPATH . 'wp-settings.php';
+```
+
+`DISALLOW_FILE_MODS` also disables installing plugins/themes from
+wp-admin — intentional here, since this project's whole approach is "if
+WordPress doesn't already do it, it's a plugin in this repo," never a
+WordPress.org install. If that ever needs to change, remove that one line.
+
+## 5. Run the install wizard
+
+Visit `https://yourdomain.com/wp-admin/install.php`, fill in site
+title/admin account — the same screen you already went through locally.
+
+Then, matching the local setup (see `docs/themes/minimal-reader.md` and
+`docs/plugins/`):
+
+1. **Appearance → Themes** — activate `Minimal Reader`.
+2. **Settings → Permalinks** — pick "Post name" (or your preferred pretty
+   structure) and Save, even without changing anything — this is what
+   generates the real `.htaccess` rewrite rules; skipping it leaves plain
+   `?p=123`-style URLs.
+3. **Pages** — create your Home and Blog pages (see
+   `docs/themes/minimal-reader.md`'s "blank canvas" section for how the
+   homepage is meant to be built from blocks), then **Settings → Reading**
+   → "A static page" → pick them.
+4. Set **Settings → General** site title/tagline, and **Appearance → Menus**
+   for the header nav (see `docs/themes/minimal-reader.md`'s Header
+   section — it's empty until a menu is assigned to "Primary Menu").
+5. Sanity check: open a page, confirm no PHP errors/warnings appear and
+   the theme's fonts/colors show up correctly (confirms `mu-plugins` and
+   `minimal-reader` both actually made it onto the server intact).
+
+From here on, updates flow through `github-ci-cd.md`.
