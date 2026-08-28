@@ -69,11 +69,37 @@ sidebar CSS is its own file, enqueued by the plugin itself via
 header.php                        <head>, dark-mode init script, the masthead (see below)
 footer.php                        footer nav + copyright, wp_footer(), closing tags
 index.php                         blog listing / category / tag / search results (post-list cards)
-single.php                        one post: title, featured image, [language_switcher] if translated, content
+single.php                        one post: title, featured image, [language_switcher] if translated, content, comments
+comments.php                      comment list + form (wp_list_comments()/comment_form() — core, not custom)
 page.php                          one page: title, content — no byline, no featured-image treatment
 page-templates/template-home.php  "Blank Canvas" template — see below
 functions.php                     theme setup, asset enqueuing, excerpt tweaks
 ```
+
+`single.php` only calls `comments_template()` when `comments_open() ||
+get_comments_number()` — WordPress's own convention, so a post with
+comments closed *and* no existing comments doesn't render an empty
+"0 comments" section for nothing. `comments.php` itself is close to a
+stock WordPress comments template (`wp_list_comments()` for the list,
+`comment_form()` for the reply box, no "Website" field) — no comment
+moderation/spam handling of its own, since that's Settings → Discussion's
+job (e.g. "Comment must be manually approved" for a zero-dependency spam
+safety net), not something to reimplement in a template. Styled as
+rounded cards (closer to a social feed's comment thread than a
+line-separated document list), with two length caps so a single busy post
+can't take over the page:
+
+- **Per comment**: `assets/js/comment-interactions.js` measures each
+  `.comment-content`'s actual rendered height after the page loads: past
+  ~4 lines, it collapses with a fade-out gradient and a "See more"/"See
+  less" toggle. A short comment is never touched. Only enqueued when
+  `comments.php` could actually render (`is_singular()` +
+  `comments_open() || get_comments_number()`, mirroring `single.php`'s own
+  condition).
+- **The whole thread**: `.comment-list` itself caps at `max-height: 32rem`
+  with `overflow-y: auto` — once there are enough comments to exceed that,
+  the thread scrolls internally instead of pushing the reply form further
+  down the page every time someone comments.
 
 There is deliberately no author/date/category line auto-rendered on
 `single.php` — that used to be hardcoded and was removed. If you want that
@@ -85,18 +111,39 @@ automatically that you didn't explicitly place there.
 
 `header.php` builds a Substack-style masthead:
 
-- Site title, centered independent of whatever's in the actions row
-  (absolutely positioned + `transform: translateX(-50%)`, not a 3-column
-  grid — simpler, no empty placeholder column needed). Falls back to normal
-  left-aligned flow under 40rem so it can't collide with the actions on
-  narrow screens.
-- Search and Share icon buttons on the right, a **Subscribe** link that
-  points at the site's native RSS feed (`get_feed_link()` — no newsletter
-  plugin, this already works), and **Sign in** (`wp_login_url()`, hidden
-  once you're actually logged in), plus the dark-mode toggle.
-  `assets/js/header-interactions.js` wires up both:
-  - **Search** toggles a hidden panel containing the theme's own
-    `get_search_form()`.
+- Site title on the left, actions row pushed to the right via
+  `justify-content: space-between` — no reading-column cap on this row
+  (`max-width: none`) so both ends actually reach the browser's edges on
+  wide screens, rather than floating inside a centered column with dead
+  space on both sides.
+- Search, then a **Subscribe** button, then Share, then the dark-mode
+  toggle. No **Sign in** link here — this project's admin logs in by going
+  straight to `/wp-admin` directly, not through a visible header link, so
+  a public "Sign in" button would only ever be for the site's own author.
+  (A separate, future concern is registered-reader login for commenting on
+  the eventual Payload-based version of this site — an entirely different
+  feature from this theme's own admin sign-in link, not a reason to bring
+  this one back.) Subscribe used to be a link straight to the RSS feed
+  (`get_feed_link()`) — removed, since labeling an RSS link "Subscribe"
+  reads as an email-collection CTA it wasn't. What's there now, in that
+  same visual spot, is `custom-newsletter-signup`'s real
+  email-collecting popup: `header.php` calls the plugin's
+  `mlns_render_signup()` directly (guarded by `function_exists()`, so the
+  theme never fatals if that plugin were ever missing) right after the
+  search block and before the share block — always there just because
+  the plugin (an MU-plugin, always active) exists, nothing to place
+  anywhere. RSS itself is untouched: the feed still exists and is still
+  auto-discovered via the `<link rel="alternate">` tag `wp_head()`
+  already emits, it just no longer has a header button of its own
+  pointing at it. See `docs/plugins/custom-newsletter-signup.md`.
+  `assets/js/header-interactions.js` wires up the other two:
+  - **Search** expands an inline pill from the search icon itself (CSS
+    width transition, `position: absolute` so it overlays without
+    reflowing the other action buttons) containing the theme's own
+    `get_search_form()` — not a full-width panel dropping below the
+    header. The pill's border/background live on one wrapper around a
+    borderless input, not two separately-bordered controls, avoiding a
+    visible seam where they'd otherwise meet.
   - **Share** opens a dropdown menu (modeled on Substack's), not the
     native Web Share sheet — `data-share-menu` in `header.php`, toggled by
     `data-share-toggle`, closed on outside click or <kbd>Escape</kbd>. Each
