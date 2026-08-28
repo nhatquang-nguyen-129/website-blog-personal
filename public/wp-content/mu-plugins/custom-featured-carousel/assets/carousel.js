@@ -112,10 +112,52 @@
       { passive: true }
     );
 
-    root.addEventListener('mouseenter', stop);
-    root.addEventListener('mouseleave', start);
-    root.addEventListener('focusin', stop);
-    root.addEventListener('focusout', start);
+    // Hover and focus are tracked as flags rather than calling stop()/start()
+    // straight off each event, for two reasons: hovering AND focusing at once
+    // then only one of them ending shouldn't resume autoplay while the other
+    // condition still holds, and switching browser tabs while hovering never
+    // fires mouseleave on the now-hidden page — without a flag, the carousel
+    // would stay "paused" indefinitely until an unrelated mouse move outside
+    // then back inside it.
+    var isHovering = false;
+    var isFocusedWithin = false;
+
+    function updatePlayState() {
+      if (isHovering || isFocusedWithin || document.hidden) {
+        stop();
+      } else {
+        start();
+      }
+    }
+
+    root.addEventListener('mouseenter', function () {
+      isHovering = true;
+      updatePlayState();
+    });
+    root.addEventListener('mouseleave', function () {
+      isHovering = false;
+      updatePlayState();
+    });
+    root.addEventListener('focusin', function () {
+      isFocusedWithin = true;
+      updatePlayState();
+    });
+    root.addEventListener('focusout', function () {
+      isFocusedWithin = false;
+      updatePlayState();
+    });
+
+    // Covers the actual tab-switch case above: once the tab is visible again,
+    // hover/focus flags may be stale (their "end" event never fired while
+    // hidden), so reset them instead of trusting whatever they happened to
+    // be left at.
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) {
+        isHovering = false;
+        isFocusedWithin = false;
+      }
+      updatePlayState();
+    });
 
     goTo(0);
     start();

@@ -67,6 +67,16 @@ each slide stays up before advancing — passed straight through to the
 carousel's `data-autoplay` attribute. A single-slide carousel never
 autoplays (nothing to advance to), regardless of this setting.
 
+Autoplay pauses while a reader is hovering or has keyboard focus inside the
+carousel (a link, the arrows, a dot), and while the browser tab itself is in
+the background (`document.hidden`) — tracked as two flags rather than
+calling stop/start straight off each hover/focus event, since either one
+ending shouldn't resume it while the other still holds. Switching browser
+tabs never fires `mouseleave`/`focusout` on the now-hidden page, so on
+`visibilitychange` back to visible, both flags are reset outright rather
+than trusted — otherwise a carousel a reader was hovering right before
+switching tabs would stay paused indefinitely after they came back.
+
 ## Manual navigation
 
 With 2+ slides, readers can also move between them directly — any manual
