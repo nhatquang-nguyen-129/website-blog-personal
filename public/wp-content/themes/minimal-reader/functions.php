@@ -67,6 +67,18 @@ function mlr_enqueue_assets() {
         filemtime(get_template_directory() . '/assets/js/header-interactions.js'),
         true
     );
+
+    // Only where comments.php could actually render — same condition
+    // single.php itself uses before calling comments_template().
+    if (is_singular() && (comments_open() || get_comments_number())) {
+        wp_enqueue_script(
+            'mlr-comment-interactions',
+            get_template_directory_uri() . '/assets/js/comment-interactions.js',
+            array(),
+            filemtime(get_template_directory() . '/assets/js/comment-interactions.js'),
+            true
+        );
+    }
 }
 
 /**

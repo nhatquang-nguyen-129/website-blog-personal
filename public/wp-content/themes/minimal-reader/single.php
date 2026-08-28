@@ -30,6 +30,10 @@ while (have_posts()) :
                 <?php the_content(); ?>
             </div>
         </article>
+
+        <?php if (comments_open() || get_comments_number()) : ?>
+            <?php comments_template(); ?>
+        <?php endif; ?>
     </main>
 
 <?php
