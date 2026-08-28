@@ -16,6 +16,7 @@
   --accent: oklch(95.5% 0.03 45deg);
   --accent-foreground: oklch(45% 0.16 39deg);
   --border: oklch(91% 0.006 60deg);
+  --destructive: oklch(55% 0.18 25deg);
   --radius: 0.5rem;
 
   --font-sans:
@@ -39,6 +40,7 @@
   --accent: oklch(28% 0.03 45deg);
   --accent-foreground: oklch(85% 0.1 45deg);
   --border: oklch(28% 0.008 60deg);
+  --destructive: oklch(65% 0.18 25deg);
 }
 
 /* Avoid a flash of the wrong theme: the inline script in header.php sets
@@ -1149,3 +1151,164 @@ ul.wp-block-categories a:hover {
   padding: 0 0.25rem;
   color: var(--muted-foreground);
 }
+
+/* ---------- Newsletter Signup block (custom-newsletter-signup plugin) ---------- */
+
+.mlns-trigger {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  padding: 0.4375rem 1rem;
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mlns-trigger:hover {
+  opacity: 0.9;
+}
+
+.mlns-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.mlns-modal[hidden] {
+  display: none;
+}
+
+.mlns-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, black 55%, transparent);
+}
+
+.mlns-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 26rem;
+  padding: 2rem 1.75rem 1.75rem;
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--card);
+  box-shadow: 0 1.5rem 3rem color-mix(in oklab, black 25%, transparent);
+}
+
+.mlns-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--muted-foreground);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mlns-modal__close:hover {
+  color: var(--foreground);
+}
+
+.mlns-signup__heading {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--foreground);
+}
+
+.mlns-signup__row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mlns-signup__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+}
+
+.mlns-signup__button {
+  flex: 0 0 auto;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.mlns-signup__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mlns-signup__consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.mlns-signup__consent input {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+}
+
+.mlns-signup__consent a {
+  color: var(--muted-foreground);
+  text-decoration: underline;
+}
+
+.mlns-signup__hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mlns-signup__message {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--primary);
+}
+
+.mlns-signup__message.is-error {
+  color: var(--destructive);
+}
+
