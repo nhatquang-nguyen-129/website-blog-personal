@@ -255,35 +255,6 @@ a {
   border-top: 1px solid var(--border);
 }
 
-.site-header__subscribe {
-  padding: 0.4375rem 1rem;
-  border-radius: calc(var(--radius) + 4px);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.site-header__subscribe:hover {
-  opacity: 0.9;
-}
-
-.site-header__signin {
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--foreground);
-  white-space: nowrap;
-}
-
-.site-header__signin:hover {
-  color: var(--primary);
-}
-
 .theme-toggle {
   border: 1px solid var(--border);
   background: transparent;

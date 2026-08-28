@@ -93,16 +93,6 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <a class="site-header__subscribe" href="<?php echo esc_url(get_feed_link()); ?>">
-                <?php esc_html_e('Subscribe', 'minimal-reader'); ?>
-            </a>
-
-            <?php if (!is_user_logged_in()) : ?>
-                <a class="site-header__signin" href="<?php echo esc_url(wp_login_url()); ?>">
-                    <?php esc_html_e('Sign in', 'minimal-reader'); ?>
-                </a>
-            <?php endif; ?>
-
             <button type="button" class="theme-toggle" data-theme-toggle aria-label="<?php esc_attr_e('Toggle dark mode', 'minimal-reader'); ?>">
                 <span aria-hidden="true">&#9788;</span>
             </button>
