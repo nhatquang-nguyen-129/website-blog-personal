@@ -3,17 +3,24 @@
 **Location:** `public/wp-content/mu-plugins/custom-maintenance-mode.php` (loader) + `public/wp-content/mu-plugins/custom-maintenance-mode/` (implementation)
 **Type:** MU-plugin (always active, not togglable from the Plugins screen)
 
+## Problem statement
+
+WordPress core has no on-demand "coming soon"/maintenance toggle — the
+plain "Briefly unavailable for scheduled maintenance" page core shows
+automatically only appears mid-update, and disappears the moment the
+update finishes; there's no admin control to turn it on deliberately and
+leave it on. WordPress.org plugins that do offer this are typically
+page-builder-heavy and bring their own styling that would need overriding
+to match this site, for what's fundamentally a single on/off flag plus two
+text fields — matching how the old Payload CMS's `maintenance` global
+worked.
+
 ## What it is
 
-A site-wide maintenance toggle, matching how the old Payload CMS's
-`maintenance` global worked: one on/off switch plus a custom title and
+A site-wide maintenance toggle: one on/off switch plus a custom title and
 message, replacing the entire page for every visitor **except a logged-in
 administrator** — so you can still browse/edit the live site while it shows
 "back soon" to everyone else.
-
-No plugin from the WordPress.org repo — those are typically page-builder-heavy
-and bring their own styling that would need overriding to match this site.
-This is a small, self-contained toggle instead.
 
 ## Usage
 

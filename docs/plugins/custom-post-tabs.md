@@ -3,6 +3,17 @@
 **Location:** `public/wp-content/mu-plugins/custom-post-tabs.php` (loader) + `public/wp-content/mu-plugins/custom-post-tabs/` (implementation)
 **Type:** MU-plugin (always active) that registers a Gutenberg block
 
+## Problem statement
+
+Checked against `CLAUDE.md`'s core-first checklist before writing this:
+no Tabs block ships in stable WordPress (it's been an experimental
+Gutenberg-plugin feature, never merged into core), and while comment count
+is data core already tracks per post, the core Query Loop block's own Sort
+control doesn't expose ordering by it — only Newest/Oldest/A-Z/Z-A. Neither
+gap is reachable through block composition alone, so a small purpose-built
+block was the correct call rather than trying to bend the Query Loop block
+into a shape it doesn't support.
+
 ## What it is
 
 `minimal-reader/post-tabs` — search "Post Tabs" in the block inserter. A

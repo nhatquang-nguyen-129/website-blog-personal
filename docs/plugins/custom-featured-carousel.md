@@ -3,6 +3,19 @@
 **Location:** `public/wp-content/mu-plugins/custom-featured-carousel.php` (loader) + `public/wp-content/mu-plugins/custom-featured-carousel/` (implementation)
 **Type:** MU-plugin (always active) that registers a Gutenberg block
 
+## Problem statement
+
+WordPress core has no carousel/slider block, and no way to hand-pick and
+reorder a specific, curated set of posts for a spotlight — the core Query
+Loop block can filter and sort a query, but it can't express "these exact
+posts, in this exact order, regardless of any query criteria." Sticky
+Posts was considered and deliberately rejected for this (see "Choosing
+what to show" below): it's a single global flag, not a per-instance,
+reorderable, capped-at-10 pick list, and using it here would mean any page
+with this block shares the same picks. Neither gap closes with block
+composition alone, which is why this is a plugin rather than a Query Loop
+variation.
+
 ## What it is
 
 `minimal-reader/featured-carousel` — search "Featured Carousel" in the block

@@ -76,8 +76,13 @@ WordPress download. Keep it that way.
   (`custom-x.php`) and its implementation folder (`custom-x/`) use this
   name.
 - One doc file per plugin in `docs/plugins/custom-x.md`, written when the
-  plugin is. See any existing one for the expected shape (what it is, how
-  to use it, how it works, file list).
+  plugin is. Leads with a **Problem statement** section: what's missing,
+  confirmation that core (and, where relevant, a core block or a
+  WordPress.org plugin) doesn't already cover it, and why — the same
+  check-in-this-order reasoning from the top of this file, made explicit
+  and permanent rather than left implicit in the commit that added the
+  plugin. Followed by what it is, how to use it, how it works, file list —
+  see any existing one for the expected shape.
 - REST endpoints, not `admin-ajax.php` + hand-rolled nonces, for anything
   new — pair `register_rest_route()` with a real `permission_callback`.
   `wp.apiFetch` already handles nonces for you.

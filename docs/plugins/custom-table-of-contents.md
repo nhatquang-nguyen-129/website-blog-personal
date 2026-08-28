@@ -3,6 +3,15 @@
 **Location:** `public/wp-content/mu-plugins/custom-table-of-contents.php` (loader) + `public/wp-content/mu-plugins/custom-table-of-contents/` (implementation)
 **Type:** MU-plugin (always active) that registers a Gutenberg block
 
+## Problem statement
+
+WordPress core has no block that scans a post's own headings and builds a
+linked table of contents from them — the closest core gets is the List
+block, which requires manually retyping every entry and re-editing it by
+hand whenever a heading changes. The old Payload CMS this project migrated
+from had this built in, and it wasn't carried over, so it was a genuine
+missing capability rather than a stylistic preference.
+
 ## What it is
 
 A **Table of Contents** block for the block editor's inserter — search "Table

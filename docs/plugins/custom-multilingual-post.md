@@ -3,6 +3,19 @@
 **Location:** `public/wp-content/mu-plugins/custom-multilingual-post.php` (loader) + `public/wp-content/mu-plugins/custom-multilingual-post/` (implementation)
 **Type:** MU-plugin (always active, not togglable from the Plugins screen)
 
+## Problem statement
+
+WordPress core has no multilingual capability at all — no linked-translation
+data model, no same-URL language switching, no `hreflang` generation.
+WordPress.org's multilingual plugins (WPML, Polylang, and similar) solve
+this generically for any site, which means heavy footprints and their own
+opinions about URL structure (usually a language-prefixed path or
+subdomain) that don't fit this project's specific requirement: one shared
+canonical URL per piece of content, regardless of which language is being
+read. That specific shape was worth a small purpose-built plugin rather
+than configuring a general-purpose one against the grain of what it
+expects.
+
 ## What it is — and isn't
 
 This is **not** an auto-translation plugin. Nothing is machine-translated. Every
