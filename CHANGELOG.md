@@ -16,6 +16,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-08-29
+
+### Fixed
+- The `branch_1x` → `main` merge (v1.0.0's PR) resurrected an old, pre-`custom-` naming-convention copy of the multilingual plugin (`multilingual-post.php` + `multilingual-post/`) alongside the current `custom-multilingual-post.php` — both define identically-named functions (`mlp_get_or_create_group`, `mlp_get_group_posts`, …), and MU-plugins load every top-level `.php` file in `mu-plugins/` unconditionally, so having both would have been an immediate `Cannot redeclare function` fatal error on every page load. Removed the resurrected old copy. Also removed six root-level `docs/*.md` files from that same much-older history (`db_mysql_manage.md`, `db_mysql_install.md`, `wp_docker_deploy.md`, `wp_manual_install.md`, `cms_php_install.md`, `wp_custom_plugins.md`), superseded entirely by the current `docs/deploy/`, `docs/plugins/`, and `docs/themes/` structure and referenced from nowhere current.
+
 ## [1.0.0] - 2026-08-29
 
 ### Added
