@@ -86,6 +86,34 @@ one of the two mirrored subdirectories — a file removed from
 `mu-plugins/custom-x/` in git correctly disappears on the server too,
 without going anywhere near `uploads/` or anything else in `wp-content/`.
 
+### Manual, from inside the panel's own web terminal instead
+
+The two commands above assume rsync running *from your own machine*, over
+SSH, into the server. If you're doing the very first deploy from a web
+terminal built into the hosting panel itself (1Panel's Advanced Features →
+Terminal, confirmed available on this project's plan — see
+`inet-onepanel-setup.md`) rather than your own machine's terminal, there's
+no "your own machine" side of that SSH connection to rsync from — instead,
+clone the repo into a throwaway directory *on the server*, rsync locally
+between two paths on that same filesystem, then remove the clone:
+
+```bash
+cd ~/public_html
+git clone https://github.com/<owner>/<repo>.git repo-tmp
+rsync -av repo-tmp/public/wp-content/mu-plugins/ wp-content/mu-plugins/
+rsync -av repo-tmp/public/wp-content/themes/minimal-reader/ wp-content/themes/minimal-reader/
+rm -rf repo-tmp
+```
+
+`repo-tmp` only ever exists transiently, deleted the moment the two
+`rsync`s finish — the live document root never permanently holds a git
+checkout of the whole repo, so this doesn't run into the same problem as
+pointing 1Panel's own Git Manager at this repo (see
+`inet-onepanel-setup.md`'s warning about that). No `--delete` here since
+`repo-tmp` is a fresh clone each time, never accumulating stale files to
+begin with — unlike the from-your-own-machine version above, which reuses
+the same server-side target directory across runs and does need it.
+
 ### Automating it with GitHub Actions (recommended once the manual version works)
 
 A workflow that rsyncs straight from the CI runner to the server over SSH

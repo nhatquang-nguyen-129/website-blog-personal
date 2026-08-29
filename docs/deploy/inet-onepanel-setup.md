@@ -64,3 +64,14 @@ wrong tool for it.
 - `git` comes preinstalled on the server itself.
 - Resource limits on WP-H1 (from iNET's own listed spec, not a secret):
   5 GB SSD, 2 CPU cores, 2 GB RAM, up to 3 MySQL databases.
+- The document root follows the ordinary cPanel-style convention —
+  `~/public_html` — confirmed via File manager, no host-specific quirk to
+  account for. `wp-initial-setup.md`'s example commands (`cd
+  ~/public_html`) work as written on this plan, nothing to substitute.
+- MySQL Manager's "Add new database" dialog auto-prefixes both the
+  database name and the username with the account's own name — you only
+  type the suffix (e.g. `wp`). Confirmed the "User Privileges" section
+  defaults to all 18 checked, which already satisfies
+  `wp-initial-setup.md`'s "All Privileges" instruction with no extra
+  clicking. Use the password-generator button (🔑 icon) rather than typing
+  one by hand.
