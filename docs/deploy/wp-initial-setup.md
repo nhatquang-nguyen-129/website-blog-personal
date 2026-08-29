@@ -3,6 +3,15 @@
 Do this once, when the domain first goes live. After this, `github-workflows.md`
 covers every future update.
 
+**Before any of this**: confirm the domain is actually *bound* to the
+website/document root you're about to install into, not just pointed at
+the server's IP via DNS — those are two different steps. On 1Panel/iNET
+specifically, that means adding the domain as an **Alias Domain**, not an
+**Addon Domain** — see `inet-onepanel-setup.md`'s warning on this. Getting
+this wrong looks like a WordPress or security problem (`install.php`
+returning `403`, other real files 404ing) when the actual cause is that
+the domain was never routed to the right folder at all.
+
 ## 1. Create the database
 
 cPanel → **MySQL Databases** (on 1Panel/iNET: Website Management →
@@ -75,12 +84,31 @@ server (SSH+git+rsync, or FTP) — the mechanism is the same for this first
 deploy as for every deploy after it, so that doc covers it once rather than
 repeating it here.
 
+**Sanity-check what actually landed**, especially right after a
+`branch_1x` → `main` merge: `ls wp-content/mu-plugins/` and confirm every
+top-level `.php` file there is one you recognize (matches a
+`docs/plugins/*.md`). A merge that resolves a conflict can silently bring
+back a file one branch had already deleted/renamed if the other branch
+had also touched it — MU-plugins load every top-level `.php` file in that
+directory unconditionally, so an old, superseded copy sitting alongside
+its replacement isn't just dead weight, it can mean duplicate function
+definitions and a fatal error on every page load. This happened once in
+this project's own history (an old `multilingual-post.php` resurrected
+alongside `custom-multilingual-post.php` — see `CHANGELOG.md`'s v1.0.1).
+
 ## 4. Create `wp-config.php`
 
 Not the same file as `docker/wp-config.docker.php` — that one has
 hardcoded placeholder salts and `WP_DEBUG` on, fine for a disposable local
-container, wrong for a public site. Copy `wp-config-sample.php` (came with
-WordPress core in step 2) to `wp-config.php` and set:
+container, wrong for a public site.
+
+If your file manager's "Copy" doesn't let you paste-as-a-new-name in the
+same folder, don't edit `wp-config-sample.php` directly to "convert" it in
+place — that leaves no clean sample to fall back on if you make a mistake,
+and the sample's original content isn't otherwise saved anywhere in this
+repo (it ships inside the WordPress core zip, not tracked in git). Use
+**New file** → `wp-config.php` instead, and paste the structure below into
+it directly:
 
 ```php
 define('DB_NAME', 'youruser_blog');

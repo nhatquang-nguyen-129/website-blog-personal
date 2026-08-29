@@ -16,6 +16,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+### Added
+- `docs/deploy/inet-onepanel-setup.md` and `docs/deploy/wp-initial-setup.md`: documented two real gotchas hit during this project's actual first production deploy. First, pointing a domain's DNS at the server does not by itself make 1Panel serve that domain from the right document root — it has to be added under Website Management → Domain as an **Alias Domain** (pointing at the already-existing website), not an **Addon Domain** (which creates a new, empty document root); getting this backwards presents as `install.php` returning `403` and other real files 404ing, which looks like a WordPress or WAF problem but isn't. Second, added a sanity-check step after laying `wp-content` onto the server: confirm every top-level `.php` file in `mu-plugins/` is one you recognize, since a merge conflict resolution can silently resurrect a file one branch had already deleted/renamed if the other branch had also touched it (this happened once already — see v1.0.1, below) — and MU-plugins load every such file unconditionally, so a stale duplicate isn't just dead weight, it's a fatal-error risk. Also noted using "New file" rather than editing `wp-config-sample.php` in place when a file manager's Copy doesn't support paste-as-new-name, since the sample's original content isn't tracked anywhere in this repo to restore from.
+
 ## [1.0.1] - 2026-08-29
 
 ### Fixed
