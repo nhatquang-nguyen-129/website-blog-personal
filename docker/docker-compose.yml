@@ -1,0 +1,40 @@
+services:
+  wordpress:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - '8000:80'
+    environment:
+      DB_HOST: db
+      DB_NAME: blog
+      DB_USER: admin
+      DB_PASSWORD: admin
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../public/wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ../public/wp-content/themes/minimal-reader:/var/www/html/wp-content/themes/minimal-reader
+      - wp_uploads:/var/www/html/wp-content/uploads
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: blog
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  wp_uploads:

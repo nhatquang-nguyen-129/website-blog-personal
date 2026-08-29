@@ -1,0 +1,35 @@
+.mlp-panel__list {
+    margin: 0.5rem 0 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.mlp-panel__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    font-size: 13px;
+}
+
+.mlp-panel__item.is-current {
+    font-weight: 600;
+}
+
+.mlp-panel__status {
+    color: #757575;
+    font-style: italic;
+}
+
+.mlp-panel__add {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.mlp-panel__done {
+    font-size: 13px;
+    font-style: italic;
+    color: #757575;
+}

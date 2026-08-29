@@ -1,0 +1,129 @@
+/* ===========================================================
+   Styles loaded inside the block editor's content iframe only
+   (see add_editor_style() in functions.php).
+
+   Deliberately NOT the same file as assets/css/style.css: that file's
+   flicker-prevention rule (`html { opacity: 0 }`, undone only once the
+   frontend's inline script sets data-theme on <html>) would otherwise
+   leak into the editor iframe — which never runs that script — leaving
+   the whole canvas permanently invisible. This file keeps just the
+   design tokens and content typography actually useful for previewing
+   a post while writing it.
+   =========================================================== */
+
+:root {
+  --background: oklch(100% 0 0deg);
+  --foreground: oklch(19% 0.005 60deg);
+  --primary: oklch(63% 0.19 39deg);
+  --secondary: oklch(97% 0.006 60deg);
+  --muted-foreground: oklch(48% 0.008 60deg);
+  --border: oklch(91% 0.006 60deg);
+  --radius: 0.5rem;
+
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.editor-styles-wrapper {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.editor-styles-wrapper a {
+  color: var(--primary);
+}
+
+.editor-styles-wrapper blockquote {
+  padding-left: 1.25em;
+  border-left: 3px solid var(--primary);
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+.editor-styles-wrapper pre,
+.editor-styles-wrapper code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.editor-styles-wrapper pre {
+  padding: 1em;
+  border-radius: var(--radius);
+  background: var(--secondary);
+}
+
+/* ---------- Table of Contents block preview ---------- */
+
+.mlptoc {
+  margin: 1.5em 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--secondary);
+  font-family: var(--font-sans);
+}
+
+.mlptoc__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.mlptoc--editor {
+  opacity: 0.85;
+}
+
+.mlptoc__editor-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
+/* ---------- Featured Carousel block preview ---------- */
+
+.mlfc-carousel-editor {
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--secondary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.mlfc-carousel-editor ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+/* ---------- Post Tabs block preview ---------- */
+
+.mlpt-post-tabs-editor {
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--secondary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.mlpt-post-tabs-editor p {
+  margin: 0.5rem 0 0;
+  color: var(--muted-foreground);
+}

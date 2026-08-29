@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "minimal-reader/featured-carousel",
+    "title": "Featured Carousel",
+    "category": "design",
+    "icon": "images-alt2",
+    "description": "An auto-advancing carousel. Add posts by pasting their link, drag to reorder, set the slide delay.",
+    "textdomain": "featured-carousel",
+    "supports": {
+        "html": false,
+        "align": ["wide", "full"],
+        "multiple": false
+    },
+    "attributes": {
+        "postIds": {
+            "type": "array",
+            "default": []
+        },
+        "delay": {
+            "type": "number",
+            "default": 5000
+        }
+    },
+    "editorScript": "file:./editor.js",
+    "render": "file:./render.php"
+}

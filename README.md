@@ -7,6 +7,10 @@
 
 Only **code and deterministic artifacts** are promoted to `main`.
 
+## Versioning
+
+Feature branches (e.g. `branch_1x`) are pushed freely without bumping any version. A version is only cut when a Pull Request merges into `main` — see [CHANGELOG.md](./CHANGELOG.md) for the exact steps and the running log of what shipped in each version.
+
 ---
 
 ## Repository Scope
