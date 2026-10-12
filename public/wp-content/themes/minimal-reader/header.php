@@ -37,6 +37,16 @@ if (!defined('ABSPATH')) {
             </a>
         <?php endif; ?>
 
+        <?php // Settings → General → Tagline (Customizer: Site Identity). Only
+        // rendered at all if one's actually set, same as has_nav_menu() below
+        // for the nav row — no empty element left sitting in the markup.
+        // Hidden on mobile, shown centered on desktop: pure CSS
+        // (.site-header__tagline's media query in style.css), no UA-sniffing. ?>
+        <?php $tagline = get_bloginfo('description'); ?>
+        <?php if ($tagline) : ?>
+            <p class="site-header__tagline"><?php echo esc_html($tagline); ?></p>
+        <?php endif; ?>
+
         <div class="site-header__actions">
             <div class="site-header__search">
                 <div class="site-header__search-field" data-search-panel>
