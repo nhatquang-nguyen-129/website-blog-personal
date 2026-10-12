@@ -93,11 +93,29 @@ that — it's the more likely cause on a fresh domain.
 
 ## Confirmed for the WP-H1 tier specifically
 
-- SSH: available, key-based only — add a dedicated deploy key's public half
-  via SSH Manager → Import SSH Key (generate the pair with `ssh-keygen`
-  locally or in CI, same as `github-workflows.md` already describes).
+- **SSH from outside the panel does not work on this plan — confirmed the
+  hard way, correcting what this doc used to say here.** Port 22 actively
+  refuses connections from the internet (tested both from a GitHub Actions
+  runner and with `ssh -v` from a developer's own machine — "Connection
+  refused", not a timeout, meaning nothing external gets a TCP handshake at
+  all). The only SSH that works is the panel's own built-in Web Terminal
+  (below), which isn't a real externally-reachable SSH service and can't be
+  used as one. Also: **Advanced Features → SSH Manager → Import SSH Key**
+  is *not* a way to authorize an external key for inbound login either —
+  that form requires pasting in a **private** key too (mandatory field),
+  which means it's for 1Panel to hold a keypair for its *own* outbound SSH
+  use (e.g. its Git Manager pulling from elsewhere), not for adding a
+  trusted public key the way `~/.ssh/authorized_keys` would. Net effect:
+  **this plan cannot do an SSH/rsync-based deploy (`github-workflows.md`'s
+  Path A) at all — use Path B (FTPS) instead**, via an FTP account created
+  under Website Management → FTP Account.
 - A web terminal is built into the panel — handy for one-off checks
-  (`git --version`, `php -v`, etc.) without needing a local SSH client.
+  (`git --version`, `php -v`, etc.) without needing a local SSH client. If
+  you do need to add a trusted public key for something that genuinely
+  runs *inside* this environment (not for external CI), it's a plain
+  `echo "ssh-ed25519 ... " >> ~/.ssh/authorized_keys` here — nothing panel-
+  specific about it — but that still only helps for connections already
+  able to reach the box, which external SSH, per above, isn't.
 - `git` comes preinstalled on the server itself.
 - Resource limits on WP-H1 (from iNET's own listed spec, not a secret):
   5 GB SSD, 2 CPU cores, 2 GB RAM, up to 3 MySQL databases.

@@ -17,6 +17,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-12
+
+### Fixed
+- `.github/workflows/deploy.yml`: switched both deploy jobs from `easingthemes/ssh-deploy` (rsync over SSH) to `SamKirkland/FTP-Deploy-Action` (FTPS). The three real deploy attempts so far (v1.0.0's and v1.0.2's merges) all failed in 7-8 seconds — first because no deploy secrets had ever been set, then, once they were, because the hosting's port 22 refuses connections from outside its own panel entirely (confirmed by both a GitHub Actions run and a direct `ssh` attempt from a developer machine — this plan only exposes SSH through 1Panel's own Web Terminal, never externally). `DEPLOY_SSH_KEY` secret removed; `DEPLOY_USER` now holds a dedicated FTP account's username (not the SSH login) and `DEPLOY_PASSWORD` was added; `DEPLOY_MU_PLUGINS_PATH`/`DEPLOY_THEME_PATH` now hold paths relative to that FTP account's own root (set to `public_html` when it was created) rather than the absolute filesystem paths SSH's `rsync` needed. See `docs/deploy/github-workflows.md`'s Path B.
+
 ## [1.0.2] - 2026-10-12
 
 ### Added
