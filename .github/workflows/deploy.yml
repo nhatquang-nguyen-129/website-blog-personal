@@ -8,33 +8,48 @@ on:
   push:
     branches: [main]
 
+# FTPS, not SSH/rsync: this hosting plan's port 22 refuses connections from
+# outside its own panel (confirmed both from a GitHub Actions run and a
+# direct `ssh` attempt from a developer machine — Web Terminal access only,
+# no externally reachable SSH). See docs/deploy/github-workflows.md's Path B.
 jobs:
-  deploy:
+  deploy-mu-plugins:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       # Only these two directories ever reach production — see
       # docs/deploy/github-workflows.md's "What never gets touched by a sync".
-      # Never widen SOURCE/TARGET here to all of wp-content/ or the
-      # document root: --delete would erase wp-content/uploads/ and
-      # anything else on the server that isn't in this repo.
+      # Never widen local-dir/server-dir here to all of wp-content/ or the
+      # document root — FTP-Deploy-Action's own default (no
+      # dangerous-clean-slate) already never deletes anything on the server
+      # it doesn't also find locally, but keeping each job scoped to exactly
+      # one of the two tracked folders is still what keeps wp-content/uploads/
+      # and everything else untouched.
       - name: Deploy mu-plugins
-        uses: easingthemes/ssh-deploy@main
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
-          REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-          SOURCE: "public/wp-content/mu-plugins/"
-          TARGET: ${{ secrets.DEPLOY_MU_PLUGINS_PATH }}
-          ARGS: "-avz --delete"
+          server: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          protocol: ftps
+          local-dir: public/wp-content/mu-plugins/
+          # Relative to the FTP account's own root (set to public_html when
+          # the account was created on 1Panel) — not an absolute filesystem
+          # path like the old SSH-based TARGET used.
+          server-dir: ${{ secrets.DEPLOY_MU_PLUGINS_PATH }}
+
+  deploy-theme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Deploy theme
-        uses: easingthemes/ssh-deploy@main
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
-          REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-          SOURCE: "public/wp-content/themes/minimal-reader/"
-          TARGET: ${{ secrets.DEPLOY_THEME_PATH }}
-          ARGS: "-avz --delete"
+          server: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          protocol: ftps
+          local-dir: public/wp-content/themes/minimal-reader/
+          server-dir: ${{ secrets.DEPLOY_THEME_PATH }}
