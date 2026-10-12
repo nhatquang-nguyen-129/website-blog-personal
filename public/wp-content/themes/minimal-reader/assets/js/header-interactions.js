@@ -1,5 +1,34 @@
 (function () {
+  /* Keeps --site-header-height (style.css's :root fallback) in sync with
+     the real, variable height of .site-header — it gains a second row once
+     a Primary Menu is assigned, and a custom logo can change it too. Every
+     heading's scroll-margin-top reads this var, so a Table of Contents
+     link (or any #anchor) lands below the sticky header instead of under
+     it. Re-measured on load (a custom logo image can still be loading when
+     DOMContentLoaded fires) and on resize (the nav row can wrap to a
+     second line on narrow screens). */
+  function syncHeaderHeightVar() {
+    var header = document.querySelector('.site-header');
+    if (!header) {
+      return;
+    }
+    document.documentElement.style.setProperty('--site-header-height', header.offsetHeight + 'px');
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    syncHeaderHeightVar();
+
+    // A direct link straight to #anchor (e.g. shared from outside the
+    // site) scrolls before this script finishes measuring the header —
+    // re-landing on the same target now that --site-header-height is
+    // accurate corrects that initial jump instead of leaving it covered.
+    if (window.location.hash) {
+      var target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+      if (target) {
+        target.scrollIntoView();
+      }
+    }
+
     var searchToggle = document.querySelector('[data-search-toggle]');
     var searchPanel = document.querySelector('[data-search-panel]');
 
@@ -127,4 +156,7 @@
       });
     });
   });
+
+  window.addEventListener('load', syncHeaderHeightVar);
+  window.addEventListener('resize', syncHeaderHeightVar);
 })();

@@ -17,6 +17,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-10-12
+
+### Fixed
+- Table of Contents block links (and any `#anchor` link into a post) landed on the right heading but with it tucked underneath `.site-header`, which is `position: sticky` — there was no `scroll-margin-top` accounting for the header's height. Added `--site-header-height` (a `:root` CSS var, fallback `4.5rem`) and applied it as `scroll-margin-top` on `.entry-content`'s headings; `header-interactions.js` now measures `.site-header`'s real height (it varies — a second row appears once a Primary Menu is assigned, a custom logo can change it too) and keeps the var in sync on load/resize, plus re-lands on `window.location.hash` once that's accurate, correcting the browser's own earlier (unadjusted) jump for a direct link straight to an anchor.
+
+### Added
+- `minimal-reader`'s header now renders the site's **Tagline** (Settings → General, `bloginfo('description')`) centered between the logo and the action icons — only if one's actually set. Desktop-only (`min-width: 48rem`, matching this file's existing breakpoint), hidden on mobile where that gap is already tight: on a wide screen the logo-left/actions-right layout otherwise leaves it sitting empty. No new plugin or setting — core's existing Tagline field was already the right place for this per `CLAUDE.md`'s own core-first checklist, the CSS to show/center/hide it responsively is the only thing that was missing.
+
 ## [1.0.3] - 2026-10-12
 
 ### Changed
