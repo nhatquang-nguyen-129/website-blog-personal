@@ -43,17 +43,149 @@ enforces, matching the "cut a version at merge time" workflow
   Content Strategy section).
 
 This is why a sync is always scoped to exactly two subdirectories, never a
-wholesale copy of `wp-content/` or the document root. **Never point a
-`--delete`-flagged sync, or an FTP client's "mirror" mode, at anything
-broader than `wp-content/mu-plugins/` and `wp-content/themes/minimal-reader/`
-specifically** — pointed at `wp-content/` itself, `--delete` would erase
-`uploads/` along with everything else that isn't in git.
+wholesale copy of `wp-content/` or the document root.
 
-## Path A — the hosting plan has SSH access
+## This project's actual method: FTPS — SSH does not work on this host
 
-### Manual (do this first — automate once this works)
+**Confirmed, the hard way, during the real first deploy attempts (see
+`CHANGELOG.md`'s v1.0.3): this hosting plan's port 22 refuses connections
+from outside its own panel, full stop.** Tested two independent ways —
+a GitHub Actions run attempting to `rsync` in, and a direct `ssh -v` from a
+developer's own machine — both got `Connection refused` immediately (not a
+timeout, meaning nothing external even completes a TCP handshake on that
+port). The only SSH that works on this plan is 1Panel's own built-in Web
+Terminal, which isn't an externally-reachable SSH service and can't be
+used as one for CI. See `inet-onepanel-setup.md`'s "Confirmed for the
+WP-H1 tier specifically" section for the full story, including why
+**Advanced Features → SSH Manager → Import SSH Key is also not the way**
+to authorize an external key (that form wants a private key too, because
+it's for 1Panel's own outbound SSH use, not inbound).
 
-From your own machine, with the server's SSH details:
+**Net result: this project deploys over FTPS, not SSH/rsync.** The
+SSH/rsync method below is kept in this doc purely as general-purpose
+reference (it's the better approach on a host that actually supports it)
+— skip straight to "Deploying via FTPS" for how this project's real
+pipeline works.
+
+## Deploying via FTPS (this project's real method)
+
+### 1. Create a dedicated FTP account
+
+1Panel → **Website Management → FTP Account** → create a new account.
+When asked for the account's **root directory**, point it at
+`public_html` (the document root) — this project's FTP paths below
+assume that root.
+
+Write down the FTP **username** and **password** it's given (or that you
+set) — these become two of the GitHub secrets below. The username is
+separate from, and unrelated to, the SSH/panel login username.
+
+### 2. The workflow file
+
+This is the actual file at `.github/workflows/deploy.yml` in this repo —
+not just a doc example:
+
+```yaml
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]   # production only — see "Which branch actually deploys" above
+
+jobs:
+  deploy-mu-plugins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy mu-plugins
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          protocol: ftps
+          local-dir: public/wp-content/mu-plugins/
+          server-dir: ${{ secrets.DEPLOY_MU_PLUGINS_PATH }}
+
+  deploy-theme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy theme
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          protocol: ftps
+          local-dir: public/wp-content/themes/minimal-reader/
+          server-dir: ${{ secrets.DEPLOY_THEME_PATH }}
+```
+
+`protocol: ftps` (FTP over TLS), never plain `ftp` — so the password isn't
+sent in the clear. Two separate jobs (not two steps in one job) so a
+failure in one doesn't block the other, and so each job's log is scoped to
+exactly one folder when debugging.
+
+### 3. Set five secrets
+
+Under the repo's **Settings → Secrets and variables → Actions**:
+
+| Secret | Value | Notes |
+|---|---|---|
+| `DEPLOY_HOST` | Server's public IP or hostname. | On this plan, found by running `curl -s ifconfig.me` in 1Panel's Web Terminal — don't use `hostname -I`, which can return an internal/NAT'd address instead of the real public one. |
+| `DEPLOY_USER` | The **FTP account's** username (step 1) — not the SSH/panel login. | |
+| `DEPLOY_PASSWORD` | The FTP account's password. | New secret this method needs that SSH-based deploy didn't. |
+| `DEPLOY_MU_PLUGINS_PATH` | Path to `wp-content/mu-plugins/`, **relative to the FTP account's own root** (not an absolute filesystem path). | With root set to `public_html` (step 1), this is `wp-content/mu-plugins/`. |
+| `DEPLOY_THEME_PATH` | Path to `wp-content/themes/minimal-reader/`, same relative rule. | `wp-content/themes/minimal-reader/`. |
+
+**This is the one real gotcha versus the SSH method**: FTP paths are
+relative to wherever the FTP account's root was set at creation, while
+SSH/rsync paths are absolute filesystem paths (e.g. found via `cd
+~/public_html/wp-content/mu-plugins && pwd` on the SSH method). Don't
+reuse absolute SSH-style paths here — they won't resolve correctly through
+an FTP root that's already scoped to `public_html`.
+
+Setting a secret, one value at a time, from your own terminal:
+
+```bash
+echo -n "the value" | gh secret set SECRET_NAME
+```
+
+(`gh secret list` afterward confirms all five names are present — it never
+shows values back, by design.)
+
+### 4. Verify
+
+```bash
+gh run list --limit 3        # see the latest "Deploy to production" run and its status
+gh run view <run-id> --log-failed   # read the actual error if it failed
+```
+
+A clean run shows both `deploy-mu-plugins` and `deploy-theme` jobs
+succeeding. If `DEPLOY_SSH_KEY` still exists as a secret from an earlier
+attempt at the SSH method, it's unused now and safe to delete
+(`gh secret delete DEPLOY_SSH_KEY`).
+
+### Fully manual fallback (no GitHub Actions at all)
+
+If you ever need to push a file up without waiting for Actions: connect
+with an FTP client (FileZilla, Cyberduck) using the same FTP account from
+step 1, and upload the contents of `public/wp-content/mu-plugins/` and
+`public/wp-content/themes/minimal-reader/` over their matching folders.
+Slower and easier to get wrong (easy to miss a deleted file, since FTP
+clients don't mirror-delete by default) but works with nothing but the FTP
+credentials.
+
+## SSH/rsync method (reference only — not usable on this project's host)
+
+Kept here for a host that actually exposes SSH externally — this project's
+current hosting doesn't (see above), so none of this applies until/unless
+that changes.
+
+### Manual, from your own machine
 
 ```bash
 rsync -avz --delete \
@@ -65,68 +197,22 @@ rsync -avz --delete \
   youruser@yourserver:~/public_html/wp-content/themes/minimal-reader/
 ```
 
-Run after every `git pull` locally that you want reflected live — or wire
-it into a small script:
-
-```bash
-#!/bin/bash
-set -e
-cd "$(git rev-parse --show-toplevel)"
-git pull origin branch_1x   # or main, once merged
-
-REMOTE=youruser@yourserver
-REMOTE_PATH=~/public_html/wp-content
-
-rsync -avz --delete public/wp-content/mu-plugins/      "$REMOTE:$REMOTE_PATH/mu-plugins/"
-rsync -avz --delete public/wp-content/themes/minimal-reader/ "$REMOTE:$REMOTE_PATH/themes/minimal-reader/"
-```
-
 `--delete` is safe here specifically because each `rsync` targets exactly
 one of the two mirrored subdirectories — a file removed from
 `mu-plugins/custom-x/` in git correctly disappears on the server too,
 without going anywhere near `uploads/` or anything else in `wp-content/`.
+**Never point a `--delete`-flagged sync at anything broader** than those
+two folders specifically — pointed at `wp-content/` itself, `--delete`
+would erase `uploads/` along with everything else that isn't in git.
 
-### Manual, from inside the panel's own web terminal instead
-
-The two commands above assume rsync running *from your own machine*, over
-SSH, into the server. If you're doing the very first deploy from a web
-terminal built into the hosting panel itself (1Panel's Advanced Features →
-Terminal, confirmed available on this project's plan — see
-`inet-onepanel-setup.md`) rather than your own machine's terminal, there's
-no "your own machine" side of that SSH connection to rsync from — instead,
-clone the repo into a throwaway directory *on the server*, rsync locally
-between two paths on that same filesystem, then remove the clone:
-
-```bash
-cd ~/public_html
-git clone https://github.com/<owner>/<repo>.git repo-tmp
-rsync -av repo-tmp/public/wp-content/mu-plugins/ wp-content/mu-plugins/
-rsync -av repo-tmp/public/wp-content/themes/minimal-reader/ wp-content/themes/minimal-reader/
-rm -rf repo-tmp
-```
-
-`repo-tmp` only ever exists transiently, deleted the moment the two
-`rsync`s finish — the live document root never permanently holds a git
-checkout of the whole repo, so this doesn't run into the same problem as
-pointing 1Panel's own Git Manager at this repo (see
-`inet-onepanel-setup.md`'s warning about that). No `--delete` here since
-`repo-tmp` is a fresh clone each time, never accumulating stale files to
-begin with — unlike the from-your-own-machine version above, which reuses
-the same server-side target directory across runs and does need it.
-
-### Automating it with GitHub Actions (recommended once the manual version works)
-
-A workflow that rsyncs straight from the CI runner to the server over SSH
-on every push — the server doesn't need git installed at all, only SSH.
-
-`.github/workflows/deploy.yml`:
+### Automating it with GitHub Actions
 
 ```yaml
 name: Deploy to production
 
 on:
   push:
-    branches: [main]   # production only — see "Which branch actually deploys" above
+    branches: [main]
 
 jobs:
   deploy:
@@ -155,83 +241,21 @@ jobs:
           ARGS: "-avz --delete"
 ```
 
-This is the actual file at `.github/workflows/deploy.yml` in this repo —
-not just a doc example. It won't run successfully until the secrets below
-are set, which is expected and harmless (a failed Action doesn't touch the
-live site).
+Secrets this method needs instead: `DEPLOY_SSH_KEY` (the **private** half
+of a dedicated deploy keypair — generate with `ssh-keygen -t ed25519 -C
+"github-actions-deploy"`, never reuse a personal key), `DEPLOY_HOST`,
+`DEPLOY_USER` (the SSH/hosting account username), and
+`DEPLOY_MU_PLUGINS_PATH`/`DEPLOY_THEME_PATH` as **absolute** filesystem
+paths this time (e.g. from `cd ~/public_html/wp-content/mu-plugins && pwd`
+over SSH) — unlike the FTPS method's paths, which are relative to the FTP
+account's own root.
 
-Set six secrets under the repo's **Settings → Secrets and variables →
-Actions**:
-
-| Secret | Value |
-|---|---|
-| `DEPLOY_SSH_KEY` | The **private** half of a dedicated deploy keypair — generate with `ssh-keygen -t ed25519 -C "github-actions-deploy"` (don't reuse your personal key). Never commit either half. |
-| `DEPLOY_HOST` | The server's hostname or IP. |
-| `DEPLOY_USER` | The SSH/hosting account username. |
-| `DEPLOY_MU_PLUGINS_PATH` | The absolute path to `wp-content/mu-plugins/` on the live server, trailing slash included. |
-| `DEPLOY_THEME_PATH` | The absolute path to `wp-content/themes/minimal-reader/` on the live server, trailing slash included. |
-
-The public half of that same keypair goes on the server — on 1Panel that's
-Advanced Features → SSH Manager → Import SSH Key (see
-`inet-onepanel-setup.md`); on most other panels it's appending to
-`~/.ssh/authorized_keys` directly. The two path secrets exist specifically
-so this workflow file never has to hardcode (or guess at) this hosting
-account's actual directory layout — same principle as `docker/.env`
-already being gitignored locally: deploy-specific configuration is a
-secret, never something committed as code.
-
-## Path B — FTP/SFTP only, no SSH
-
-Still automatable from GitHub Actions, just via FTP instead of rsync-over-SSH:
-
-```yaml
-name: Deploy to production
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy-mu-plugins:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
-          protocol: ftps
-          local-dir: public/wp-content/mu-plugins/
-          server-dir: /public_html/wp-content/mu-plugins/
-
-  deploy-theme:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
-          protocol: ftps
-          local-dir: public/wp-content/themes/minimal-reader/
-          server-dir: /public_html/wp-content/themes/minimal-reader/
-```
-
-Use `ftps` (FTP over TLS), not plain `ftp`, so the password isn't sent in
-the clear — virtually every host supports it. Same secrets setup as
-Path A.
-
-### Fully manual fallback (no GitHub Actions at all)
-
-If automating isn't worth it yet: after pulling locally, connect with an
-FTP client (FileZilla, Cyberduck, or cPanel's File Manager) and upload the
-contents of `public/wp-content/mu-plugins/` and
-`public/wp-content/themes/minimal-reader/` over their matching folders on
-the server, replacing existing files. Slower and easier to get wrong (easy
-to miss a deleted file, since FTP clients don't mirror-delete by default)
-but works with nothing but hosting credentials.
+The public half of that keypair would need to go into the server's own
+`~/.ssh/authorized_keys` (append, don't overwrite, if other keys are
+already trusted there) — on a host where SSH is actually reachable from
+outside, that's the correct place for it, not a panel's own "Import SSH
+Key" UI unless that UI specifically documents itself as managing
+`authorized_keys` (1Panel's doesn't — see above).
 
 ## After any sync
 
