@@ -54,6 +54,43 @@ since the commands are identical regardless of which panel is involved —
 this section exists only to flag that 1Panel's *own* Git feature is the
 wrong tool for it.
 
+## ⚠️ Adding your real domain: "Alias Domain", not "Addon Domain"
+
+This plan comes with a website already created against a temporary
+placeholder hostname (something like
+`xxxxxxxx.onehost-wphnxxxxxx.000web.xyz`), document root `~/public_html` —
+that's where `wp-initial-setup.md`'s steps actually happen, since it's the
+only website that exists until you add one. Pointing your real domain's
+DNS at the server's IP (`dns-configuration.md` / `inet-dns-setup.md`) gets
+requests to the right *server* — it does **not**, by itself, make 1Panel
+serve that domain from `~/public_html`. Website Management → Domain still
+only lists the placeholder hostname until the real domain is added there
+explicitly.
+
+**Website Management → Domain → Add Domain** offers two tabs, and picking
+the wrong one is an easy mistake:
+
+- **Addon Domain** — creates a **new** website with its own, empty
+  document root (defaults to `/domains/yourdomain.com`). Using this for
+  your real domain leaves it pointing at an empty folder, while everything
+  actually installed sits — unreachable — at `~/public_html` under the
+  placeholder hostname.
+- **Alias Domain** — the correct one. Point it at the *existing* website
+  (the placeholder one); the folder-path field auto-fills to that same
+  `~/public_html`. No new document root, no second WordPress/database
+  prompt — the info banner on that tab says as much.
+
+**Symptom if you pick "Addon Domain" (or never add the domain at all)**:
+real files that definitely exist in `~/public_html` (`wp-login.php`,
+`readme.html`, …) 404 on the real domain, while `wp-admin/install.php`
+specifically comes back `403 Forbidden` from a bare LiteSpeed error page
+rather than a WordPress one — a strong sign the request is being handled
+by something other than your actual site (an unrouted/default vhost),
+not by WordPress or a WAF. Checking WAF status, file permissions, and
+`.htaccess` first is a reasonable instinct (all three were, in fact, fine)
+but the domain-binding step is worth confirming *before* chasing any of
+that — it's the more likely cause on a fresh domain.
+
 ## Confirmed for the WP-H1 tier specifically
 
 - SSH: available, key-based only — add a dedicated deploy key's public half
