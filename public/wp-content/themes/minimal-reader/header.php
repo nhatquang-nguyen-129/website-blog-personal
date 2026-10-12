@@ -26,13 +26,16 @@ if (!defined('ABSPATH')) {
 
 <header class="site-header">
     <div class="container site-header__top">
-        <a class="site-title" href="<?php echo esc_url(home_url('/')); ?>">
-            <?php if (has_custom_logo()) : ?>
-                <?php the_custom_logo(); ?>
-            <?php else : ?>
+        <?php if (has_custom_logo()) : ?>
+            <?php // the_custom_logo() already wraps the image in its own <a class="custom-logo-link">
+            // — reusing the "site-title" <a> here as well would nest two <a> tags, which is
+            // invalid HTML and lets the browser silently break one of the links. ?>
+            <?php the_custom_logo(); ?>
+        <?php else : ?>
+            <a class="site-title" href="<?php echo esc_url(home_url('/')); ?>">
                 <?php bloginfo('name'); ?>
-            <?php endif; ?>
-        </a>
+            </a>
+        <?php endif; ?>
 
         <div class="site-header__actions">
             <div class="site-header__search">

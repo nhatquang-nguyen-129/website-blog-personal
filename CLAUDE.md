@@ -114,6 +114,14 @@ WordPress download. Keep it that way.
   "⚠️ Two separate stylesheets" section of `docs/themes/custom-minimal-reader.md` before adding
   `add_editor_style()` CSS or a block's own sidebar CSS.
 
+## Releases: always ask before touching git
+
+Before committing, pushing, merging, or tagging anything — regardless of how
+small the change looks — ask the user whether to keep the current version
+or bump it, and if bumping, to what. Never decide this alone or infer it
+from diff size. Full versioning scheme (`vX.Y.Z`) and the reasoning in
+`docs/workflow/release-process.md`.
+
 ## Where to look for more detail
 
 - `docs/themes/custom-minimal-reader.md` — the theme's design system, template responsibilities,
@@ -124,4 +132,6 @@ WordPress download. Keep it that way.
   production. The same "core stays untouched, only `wp-content/mu-plugins/`
   and `wp-content/themes/minimal-reader/` are ours" rule applies there too —
   a deploy is never a wholesale copy of the repo onto the server.
+- `docs/workflow/release-process.md` — the versioning scheme (`vX.Y.Z`) and the
+  always-ask-first rule before any git action.
 - `CHANGELOG.md` — what shipped and why, in the order it happened.

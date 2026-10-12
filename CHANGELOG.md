@@ -13,11 +13,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
   3. Tag the merge commit on `main`: `git tag v1.1.0 && git push origin v1.1.0`.
   4. Optionally turn the tag into a GitHub Release (`gh release create v1.1.0 --notes-from-tag` or via the GitHub UI) so it shows up under the repo's "Releases" tab.
 - Version bump guide: **PATCH** (1.0.x) for fixes/tweaks, **MINOR** (1.x.0) for new features that don't break anything existing, **MAJOR** (x.0.0) for breaking changes (e.g. a change that requires re-running the WordPress installer or breaks an existing mu-plugin's data).
+- Before any git action (commit, push, merge, tag), always ask the user first whether to keep the current version or bump it — never decide alone. See `docs/workflow/release-process.md`.
 
 ## [Unreleased]
 
 ### Added
 - `docs/deploy/inet-onepanel-setup.md` and `docs/deploy/wp-initial-setup.md`: documented two real gotchas hit during this project's actual first production deploy. First, pointing a domain's DNS at the server does not by itself make 1Panel serve that domain from the right document root — it has to be added under Website Management → Domain as an **Alias Domain** (pointing at the already-existing website), not an **Addon Domain** (which creates a new, empty document root); getting this backwards presents as `install.php` returning `403` and other real files 404ing, which looks like a WordPress or WAF problem but isn't. Second, added a sanity-check step after laying `wp-content` onto the server: confirm every top-level `.php` file in `mu-plugins/` is one you recognize, since a merge conflict resolution can silently resurrect a file one branch had already deleted/renamed if the other branch had also touched it (this happened once already — see v1.0.1, below) — and MU-plugins load every such file unconditionally, so a stale duplicate isn't just dead weight, it's a fatal-error risk. Also noted using "New file" rather than editing `wp-config-sample.php` in place when a file manager's Copy doesn't support paste-as-new-name, since the sample's original content isn't tracked anywhere in this repo to restore from.
+- `docs/workflow/release-process.md`: the project's versioning policy (`vX.Y.Z` — Z for fixes/minor changes, Y for feature updates, X for a full architecture overhaul) and a standing rule to always ask the user before any git action (commit/push/merge/tag) whether to keep the current version or bump it, rather than deciding alone. Cross-linked from `CLAUDE.md` and this file's "How this file is maintained" section above.
+
+### Fixed
+- `header.php`: the site logo link was nested inside the "site-title" link (`<a class="site-title">` wrapping `the_custom_logo()`'s own `<a class="custom-logo-link">`) whenever a custom logo was set — invalid HTML, since `the_custom_logo()` already renders its own anchor. Never surfaced before since no site had actually set a logo yet. Now only wraps the plain site-name text fallback in the `site-title` anchor; the logo case renders `the_custom_logo()` directly.
 
 ## [1.0.1] - 2026-08-29
 
