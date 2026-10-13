@@ -17,13 +17,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
-## [1.0.4] - 2026-10-12
+## [1.0.4] - 2026-10-13
 
 ### Fixed
 - Table of Contents block links (and any `#anchor` link into a post) landed on the right heading but with it tucked underneath `.site-header`, which is `position: sticky` — there was no `scroll-margin-top` accounting for the header's height. Added `--site-header-height` (a `:root` CSS var, fallback `4.5rem`) and applied it as `scroll-margin-top` on `.entry-content`'s headings; `header-interactions.js` now measures `.site-header`'s real height (it varies — a second row appears once a Primary Menu is assigned, a custom logo can change it too) and keeps the var in sync on load/resize, plus re-lands on `window.location.hash` once that's accurate, correcting the browser's own earlier (unadjusted) jump for a direct link straight to an anchor.
 
 ### Added
 - `minimal-reader`'s header now renders the site's **Tagline** (Settings → General, `bloginfo('description')`) centered between the logo and the action icons — only if one's actually set. Desktop-only (`min-width: 48rem`, matching this file's existing breakpoint), hidden on mobile where that gap is already tight: on a wide screen the logo-left/actions-right layout otherwise leaves it sitting empty. No new plugin or setting — core's existing Tagline field was already the right place for this per `CLAUDE.md`'s own core-first checklist, the CSS to show/center/hide it responsively is the only thing that was missing.
+- A **back to top** button (`assets/js/back-to-top.js`), fixed to the bottom-right corner, for this project's typically-long posts — a desktop reader has the Home key, but there's no mobile equivalent, and manually dragging a thumb back up a long article is slow. Checked against core and the browser first: WordPress core has no such button, and while iOS Safari/Chrome Android let you tap the status bar to scroll to top, that's not discoverable and stops working once the browser chrome auto-hides on scroll (the common case on a long post) — neither covers this. Appears only past one scrolled viewport (`window.innerHeight`, rAF-throttled on `scroll`) so it's never visible on a normal-length archive/search page, fades in/out via `opacity`/`visibility` rather than `display` so the transition has something to animate, and respects `prefers-reduced-motion` both for its own fade and for the scroll itself (`scrollTo({behavior: 'auto'})` instead of `'smooth'`). A `<button>`, not an `<a href="#">`, so clicking it never touches the URL's hash or adds a browser-history entry. Theme-level (`footer.php`/`functions.php`), not a plugin — a UI-chrome interaction in the same bucket as the existing dark-mode toggle and header search/share buttons, not a new data capability.
 
 ## [1.0.3] - 2026-10-12
 
