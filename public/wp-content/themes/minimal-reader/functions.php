@@ -68,6 +68,16 @@ function mlr_enqueue_assets() {
         true
     );
 
+    // Every page, not just single posts — index.php's post-list cards and
+    // archive/search pages can run long too, not just a single post.
+    wp_enqueue_script(
+        'mlr-back-to-top',
+        get_template_directory_uri() . '/assets/js/back-to-top.js',
+        array(),
+        filemtime(get_template_directory() . '/assets/js/back-to-top.js'),
+        true
+    );
+
     // Only where comments.php could actually render — same condition
     // single.php itself uses before calling comments_template().
     if (is_singular() && (comments_open() || get_comments_number())) {

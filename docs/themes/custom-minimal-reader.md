@@ -33,13 +33,17 @@ accent, serif body copy.
   `--secondary`, `--muted-foreground`, `--border`, `--radius`, plus
   `--font-sans` / `--font-serif` / `--font-mono`), redefined under
   `[data-theme='dark']` for dark mode.
-- **Dark mode** is a `data-theme` attribute on `<html>`, not a media query
-  alone. An inline script at the very top of `header.php`'s `<head>` reads
-  `localStorage['mlr-theme']` (falling back to `prefers-color-scheme`) and
-  sets the attribute *before* anything paints. `assets/css/style.css` hides
-  `<html>` (`opacity: 0`) until that attribute exists, to avoid a flash of
-  the wrong theme. The sun icon button in the header (`assets/js/theme-toggle.js`)
-  flips the attribute and persists the choice.
+- **Dark mode** is a `data-theme` attribute on `<html>`, not a media query.
+  An inline script at the very top of `header.php`'s `<head>` reads
+  `localStorage['mlr-theme']` and sets the attribute *before* anything
+  paints — **defaulting to `dark`** when nothing's stored yet, deliberately
+  ignoring the device's own `prefers-color-scheme` (a reader whose OS/browser
+  happens to be set to light still gets dark on first visit; only an
+  explicit toggle click changes that, from then on persisted per-device).
+  `assets/css/style.css` hides `<html>` (`opacity: 0`) until that attribute
+  exists, to avoid a flash of the wrong theme. The sun icon button in the
+  header (`assets/js/theme-toggle.js`) flips the attribute and persists the
+  choice.
 - Fonts: Source Serif 4 (headings, article body — loaded from Google
   Fonts) and a system-UI stack for everything else (nav, buttons, UI
   chrome).

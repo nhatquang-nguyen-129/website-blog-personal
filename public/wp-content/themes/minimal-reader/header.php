@@ -10,12 +10,15 @@ if (!defined('ABSPATH')) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
     (function () {
+        // Default is always dark, regardless of the device/browser's own
+        // prefers-color-scheme — a reader who's never touched the toggle (or
+        // whose OS happens to be set to light) still gets dark on first
+        // load; only an explicit toggle click (persisted below) changes that.
         try {
             var stored = localStorage.getItem('mlr-theme');
-            var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-theme', stored || 'dark');
         } catch (e) {
-            document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.setAttribute('data-theme', 'dark');
         }
     })();
     </script>

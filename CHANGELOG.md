@@ -17,6 +17,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-10-13
+
+### Added
+- A **back to top** button (`assets/js/back-to-top.js`), fixed to the bottom-right corner, for this project's typically-long posts — a desktop reader has the Home key, but there's no mobile equivalent, and manually dragging a thumb back up a long article is slow. Checked against core and the browser first: WordPress core has no such button, and while iOS Safari/Chrome Android let you tap the status bar to scroll to top, that's not discoverable and stops working once the browser chrome auto-hides on scroll (the common case on a long post) — neither covers this. Appears only past one scrolled viewport (`window.innerHeight`, rAF-throttled on `scroll`) so it's never visible on a normal-length archive/search page, fades in/out via `opacity`/`visibility` rather than `display` so the transition has something to animate, and respects `prefers-reduced-motion` both for its own fade and for the scroll itself (`scrollTo({behavior: 'auto'})` instead of `'smooth'`). A `<button>`, not an `<a href="#">`, so clicking it never touches the URL's hash or adds a browser-history entry. Theme-level (`footer.php`/`functions.php`), not a plugin — a UI-chrome interaction in the same bucket as the existing dark-mode toggle and header search/share buttons, not a new data capability.
+
+### Changed
+- The header Tagline added in 1.0.4 is now **1.5× the Subscribe button's text size** (`0.875rem` → `1.3125rem`) — too easy to miss at the original size, which just matched the button next to it instead of reading as its own element.
+
+### Fixed
+- Dark mode fell back to the device's own `prefers-color-scheme` whenever nothing was stored yet in `localStorage['mlr-theme']` — a reader whose OS/browser happened to be set to light saw light on first visit instead of this site's intended default. The inline theme-detection script in `header.php` now always defaults to **dark** when nothing's stored, ignoring `prefers-color-scheme` entirely; an explicit toggle click still changes it from there, persisted per-device as before.
+- Mobile pages could pick up a horizontal scrollbar: a long unbroken string (a URL, a filename) in a post or a comment, or a wide core Table block, had nowhere to wrap or scroll and overflowed the whole page's width instead — which also meant an ordinary vertical swipe could drag the page sideways. Added `overflow-wrap`/`word-break` to `.entry-content` and `.comment-content`, and scoped `.entry-content table { display: block; overflow-x: auto; }` so a wide table scrolls within itself instead of widening the page. Theme-only (`style.css`) — no core file touched.
+
 ## [1.0.4] - 2026-10-12
 
 ### Fixed

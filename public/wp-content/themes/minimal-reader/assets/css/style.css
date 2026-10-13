@@ -177,7 +177,9 @@ a {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-family: var(--font-sans);
-    font-size: 0.875rem;
+    /* 1.5× .mlns-trigger's 0.875rem Subscribe button text — big enough to
+       actually read as a tagline, not blend into the icon row next to it. */
+    font-size: 1.3125rem;
     color: var(--muted-foreground);
     /* Decorative text layered over the row via absolute positioning —
        never intercept clicks meant for the logo/actions either side of it. */
@@ -514,6 +516,23 @@ a {
   font-size: 1.125rem;
   line-height: 1.75;
   padding-block: 2rem;
+  /* A long unbroken string (URL, filename, hashtag) never wraps on its own
+     — without this it overflows the reading column instead, widening the
+     whole page past the viewport on mobile (where that column is narrow
+     enough to hit this often) and producing a horizontal scrollbar that
+     makes an ordinary vertical swipe drag the page sideways too. */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* The core Table block has no responsive wrapper of its own — a wide table
+   just overflows the page the same way a long word does. Scoped to tables
+   inside post/page content specifically, not every <table> on the site
+   (e.g. wp-admin's), since this is a theme file, not a core change. */
+.entry-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .entry-content > * + * {
@@ -1435,6 +1454,11 @@ ul.wp-block-categories a:hover {
 .comment-content {
   position: relative;
   margin-left: 2.875rem;
+  /* Same reasoning as .entry-content — a commenter's text is just as free-
+     form (and just as capable of pasting in a long unbroken URL) as a
+     post's own content, so it needs the same overflow protection. */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .comment-content p {
@@ -1588,6 +1612,49 @@ ul.wp-block-categories a:hover {
     display: block;
     width: 100%;
     margin-right: 0;
+  }
+}
+
+/* ---------- Back to top button (assets/js/back-to-top.js) ---------- */
+
+.back-to-top {
+  position: fixed;
+  right: calc(1.25rem + env(safe-area-inset-right, 0px));
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 12px 32px color-mix(in oklab, black 18%, transparent);
+  cursor: pointer;
+  /* Hidden (not just transparent) until back-to-top.js's scroll listener
+     opts it in past SHOW_AFTER — visibility, not display, so the fade
+     transition below has something to animate instead of popping in/out. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.5rem);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    transition: none;
   }
 }
 
