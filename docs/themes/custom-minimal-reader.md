@@ -72,8 +72,8 @@ sidebar CSS is its own file, enqueued by the plugin itself via
 ```
 header.php                        <head>, dark-mode init script, the masthead (see below)
 footer.php                        footer nav + copyright, wp_footer(), closing tags
-index.php                         blog listing / category / tag / search results (post-list cards)
-single.php                        one post: title, featured image, [language_switcher] if translated, content, comments
+index.php                         blog listing / category / tag / search results (post-list cards: text left, featured-image thumbnail right)
+single.php                        one post: language picker (if translated), title, featured image, content, comments
 comments.php                      comment list + form (wp_list_comments()/comment_form() — core, not custom)
 page.php                          one page: title, content — no byline, no featured-image treatment
 page-templates/template-home.php  "Blank Canvas" template — see below
@@ -252,13 +252,25 @@ around it changes), give it its own unique `view-transition-name` inside
 that same media query block — names must be unique per page, so don't
 reuse `site-header`'s.
 
-- `[language_switcher]` shortcode (from `custom-multilingual-post`) is
-  echoed directly in `single.php` when the post is part of a translation
-  group. Styled as `.mlp-language-switcher`.
+- Languages: `single.php` calls `custom-multilingual-post`'s
+  `mlp_render_language_picker()` above the title (guarded by
+  `function_exists()`): an orange "Available in other languages" pill that opens a dropdown of the post's languages. It renders
+  nothing on a post without another published language. Styled in the
+  "Language picker" section of `style.css`. The header carries no language
+  control.
 - The Table of Contents block's `.mlptoc` markup and the Featured
   Carousel's `.home-carousel` markup are both styled here, not in their
   respective plugins — see the "Theme = presentation, plugins = features"
   note above.
+- `index.php`'s post-list items show the post's featured image on the
+  right (`mlr-list-thumb`, 320×200 hard-cropped, the theme's own size
+  registered in `functions.php`, not borrowed from a plugin), matching a
+  Post Tabs row.
+- Review Score styling (`.mlrs-box*`, `.mlrs-badge*`, `.mlrs-tier--*`) is
+  the last section of `style.css`. Tier colors are the `--mlrs-*` tokens on
+  `:root` / `[data-theme='dark']`. A copy of the box's static styles lives
+  in `editor.css` for the canvas preview, so keep the tier colors in sync
+  between the two files. See `docs/plugins/custom-review-score.md`.
 
 ## Extending this theme
 
