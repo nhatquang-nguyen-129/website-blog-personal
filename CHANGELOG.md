@@ -17,6 +17,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-11-15
+
+### Changed
+- Review Score box on phones (below 36rem) stays side by side instead of stacking: the score panel shrinks to a narrow 6rem column (smaller label, number and "/10"; a long label wraps inside it) and the summary keeps the rest of the width at a slightly smaller size.
+
+### Fixed
+- Review Score box: a text color picked on a summary paragraph (e.g. black) stuck in dark mode and vanished on the dark card, and a background color made a white panel that clashed with it. The box now owns its colors: the summary always uses the theme's text color and follows light/dark mode, and text/background colors set on paragraphs inside it are ignored (`style.css`, mirrored in `editor.css` so the editor preview matches).
+
 ## [1.1.1] - 2026-11-15
 
 ### Changed
