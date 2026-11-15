@@ -2017,9 +2017,26 @@ ul.wp-block-categories a:hover {
 .mlrs-box__summary-body {
   flex: 1 1 auto;
   min-width: 0;
+  color: var(--foreground);
   font-family: var(--font-serif);
   font-size: 1.0625rem;
   line-height: 1.7;
+}
+
+/* The box owns its colors: the summary always uses the theme's text color,
+   so it flips with light/dark mode like the rest of the post. A text or
+   background color picked on a paragraph inside it would otherwise stick —
+   e.g. black text that vanishes on the dark card, or a white panel that
+   looks pasted onto it. Core's color classes carry !important, hence the
+   !important here. Inline highlights (the "Highlight" text format) are left
+   alone. */
+.mlrs-box__summary-body .has-text-color {
+  color: var(--foreground) !important;
+}
+
+.mlrs-box__summary-body .has-background {
+  padding: 0 !important;
+  background: none !important;
 }
 
 .mlrs-box__summary-body > * {
@@ -2030,17 +2047,39 @@ ul.wp-block-categories a:hover {
   margin-top: 0.75em;
 }
 
+/* Phones: still side by side, never stacked — the score panel shrinks to a
+   narrow column (fits "10" or "9.5" plus "/10" at this size; a long label
+   wraps inside it) and the summary keeps the rest of the width. */
 @media (max-width: 36rem) {
   .mlrs-box {
-    grid-template-columns: 1fr;
+    grid-template-columns: 6rem 1fr;
   }
 
   .mlrs-box__score {
-    padding: 1.5rem;
+    gap: 0.35rem;
+    padding: 1rem 0.625rem;
+  }
+
+  .mlrs-box__label {
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+  }
+
+  .mlrs-box__number {
+    font-size: 2rem;
+  }
+
+  .mlrs-box__max {
+    font-size: 0.75rem;
   }
 
   .mlrs-box__summary {
-    padding: 1.5rem;
+    padding: 1rem 0.875rem;
+  }
+
+  .mlrs-box__summary-body {
+    font-size: 0.9375rem;
+    line-height: 1.6;
   }
 }
 

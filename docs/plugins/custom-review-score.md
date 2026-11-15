@@ -20,7 +20,8 @@ block or setting covers that, so this is a genuinely new capability
 1. **Review Score block** (`minimal-reader/review-score`, search "Review
    Score" in the inserter): a highlighted box, usually placed at the end of
    a review post. A colored score panel (label + big number) sits on the
-   left, and your own summary paragraphs on the right. One per post, and
+   left, and your own summary paragraphs on the right (side by side on
+   phones too, with a narrower score column). One per post, and
    posts only: it's hidden from the inserter on pages
    (`allowed_block_types_all`), since the score meta is registered for
    posts and a page would silently drop it on save.
@@ -52,7 +53,11 @@ Most posts aren't reviews. A post with no score shows no badge.
    tag fits far more. An older label already over the limit is kept, with
    a warning, since it would wrap onto two lines in the box.
 4. Write the summary in the paragraphs on the right of the box.
-   Paragraphs and lists only, no headings (see below).
+   Paragraphs and lists only, no headings (see below). Leave their colors
+   alone: the box owns its colors, and the theme ignores a text or
+   background color picked on a paragraph inside it, so the summary always
+   follows light/dark mode (a black text color would otherwise vanish on the
+   dark-mode card).
 5. Save/Update as normal. The score is saved together with the post.
 
 Color follows the score:

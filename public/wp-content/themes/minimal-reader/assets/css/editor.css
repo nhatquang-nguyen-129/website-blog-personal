@@ -205,3 +205,14 @@
   font-size: 1.0625rem;
   line-height: 1.7;
 }
+
+/* Mirrors style.css: the summary ignores text/background colors picked on
+   its paragraphs, so the preview matches the frontend. */
+.mlrs-box__summary-body .has-text-color {
+  color: var(--foreground) !important;
+}
+
+.mlrs-box__summary-body .has-background {
+  padding: 0 !important;
+  background: none !important;
+}
