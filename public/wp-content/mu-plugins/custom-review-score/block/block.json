@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "minimal-reader/review-score",
+    "title": "Review Score",
+    "category": "design",
+    "icon": "star-filled",
+    "textdomain": "review-score",
+    "usesContext": ["postId", "postType"],
+    "supports": {
+        "html": false,
+        "multiple": false
+    },
+    "attributes": {
+        "label": {
+            "type": "string",
+            "default": "Đánh giá"
+        }
+    },
+    "editorScript": "file:./editor.js",
+    "render": "file:./render.php"
+}
