@@ -127,3 +127,81 @@
   margin: 0.5rem 0 0;
   color: var(--muted-foreground);
 }
+
+/* ---------- Review Score block preview ----------
+   A static version of style.css's .mlrs-box (no reveal animation) so the
+   box looks like the real thing while writing. Keep tier colors in sync
+   with style.css's --mlrs-* tokens. */
+
+.mlrs-tier--excellent { --mlrs-color: oklch(55% 0.21 25deg); --mlrs-on-color: oklch(100% 0 0deg); }
+.mlrs-tier--good { --mlrs-color: oklch(58% 0.15 150deg); --mlrs-on-color: oklch(100% 0 0deg); }
+.mlrs-tier--mixed { --mlrs-color: oklch(76% 0.15 80deg); --mlrs-on-color: oklch(20% 0.02 60deg); }
+.mlrs-tier--poor { --mlrs-color: oklch(52% 0.015 60deg); --mlrs-on-color: oklch(100% 0 0deg); }
+
+.mlrs-box {
+  display: grid;
+  grid-template-columns: minmax(10rem, 14rem) 1fr;
+  margin-block: 2.5em;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  overflow: hidden;
+  background: var(--background);
+  font-family: var(--font-sans);
+}
+
+.mlrs-box__score {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.75rem 1.5rem;
+  background: linear-gradient(
+    150deg,
+    color-mix(in oklab, var(--mlrs-color, var(--muted-foreground)) 88%, white),
+    var(--mlrs-color, var(--muted-foreground)) 45%,
+    color-mix(in oklab, var(--mlrs-color, var(--muted-foreground)) 70%, black)
+  );
+  color: var(--mlrs-on-color, var(--background));
+}
+
+.mlrs-box__label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mlrs-box__value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  line-height: 1;
+}
+
+.mlrs-box__number {
+  font-size: 5.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.mlrs-box__max {
+  font-size: 1.375rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.mlrs-box__hint {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.mlrs-box__summary {
+  padding: 1.75rem;
+  min-width: 0;
+}
+
+.mlrs-box__summary-body {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}

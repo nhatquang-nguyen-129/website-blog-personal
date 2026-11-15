@@ -7,11 +7,17 @@ get_header();
 
 while (have_posts()) :
     the_post();
-    $has_group = (bool) get_post_meta(get_the_ID(), '_ml_group', true);
     ?>
 
     <main class="container container--narrow">
         <article <?php post_class(); ?>>
+            <?php // "Available in other languages" picker from
+            // custom-multilingual-post — renders nothing on a post without
+            // another published language. ?>
+            <?php if (function_exists('mlp_render_language_picker')) : ?>
+                <?php echo mlp_render_language_picker(); ?>
+            <?php endif; ?>
+
             <header class="post-hero">
                 <h1 class="post-hero__title"><?php the_title(); ?></h1>
 
@@ -21,10 +27,6 @@ while (have_posts()) :
                     </div>
                 <?php endif; ?>
             </header>
-
-            <?php if ($has_group) : ?>
-                <?php echo do_shortcode('[language_switcher]'); ?>
-            <?php endif; ?>
 
             <div class="entry-content">
                 <?php the_content(); ?>

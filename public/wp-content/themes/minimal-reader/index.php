@@ -19,15 +19,25 @@ get_header();
 
     <?php if (have_posts()) : ?>
         <div class="post-list">
-            <?php while (have_posts()) : the_post(); ?>
-                <article class="post-list__item">
-                    <h2 class="post-list__title">
-                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                    </h2>
-                    <div class="post-list__meta">
-                        <?php echo esc_html(get_the_date()); ?>
+            <?php while (have_posts()) : the_post();
+                $has_thumb = has_post_thumbnail();
+                ?>
+                <article class="post-list__item<?php echo $has_thumb ? ' has-thumb' : ''; ?>">
+                    <div class="post-list__body">
+                        <h2 class="post-list__title">
+                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                        </h2>
+                        <div class="post-list__meta">
+                            <?php echo esc_html(get_the_date()); ?>
+                        </div>
+                        <div class="post-list__excerpt"><?php the_excerpt(); ?></div>
                     </div>
-                    <div class="post-list__excerpt"><?php the_excerpt(); ?></div>
+
+                    <?php if ($has_thumb) : ?>
+                        <a class="post-list__thumb" href="<?php the_permalink(); ?>" tabindex="-1" aria-hidden="true">
+                            <?php the_post_thumbnail('mlr-list-thumb', array('class' => 'post-list__image', 'alt' => '')); ?>
+                        </a>
+                    <?php endif; ?>
                 </article>
             <?php endwhile; ?>
         </div>

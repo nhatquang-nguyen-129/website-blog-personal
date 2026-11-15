@@ -57,6 +57,14 @@ If a Featured Image was uploaded before this size existed, regenerate it
 otherwise WordPress falls back to scaling the next closest size up, which
 looks soft/blurry on a full-width slide.
 
+**On phones (below 48rem) the slide is 16:9 instead**, the shape this
+site's featured images are uploaded in. There, `render.php` wraps the
+image in a `<picture>` whose mobile `<source>` uses the uncropped `large`
+size family (`wp_get_attachment_image_srcset()`), so the image shows whole
+rather than as a zoomed-in slice of the 1600×500 desktop strip. The
+desktop slide (32:9) still uses `mlfc-carousel` and accepts the crop to
+run edge to edge.
+
 ## Choosing what to show
 
 In the block's sidebar, under **Featured posts**:
@@ -96,7 +104,9 @@ With 2+ slides, readers can also move between them directly — any manual
 move restarts the autoplay clock so the next auto-advance doesn't land a
 moment later:
 
-- **Arrows** (‹ ›) on either side of the carousel.
+- **Arrows** (‹ ›) on either side of the carousel. Hidden on phones
+  (below 48rem), where they'd sit on top of the label/title and swiping is
+  the natural gesture anyway. The dots stay.
 - **Dots** below it, one per slide.
 - **Two-finger trackpad swipe** (macOS and similar) — detected as a `wheel`
   event whose `deltaX` dominates `deltaY`.
@@ -142,6 +152,11 @@ moment later:
   relying on block.json's bare `editorScript` (which only picks up
   dependencies from a build-tool-generated `editor.asset.php` — there's no
   build step here).
+
+- If `custom-review-score` is active, each slide also gets that post's
+  score badge (top-left corner) via `mlrs_render_badge()`, guarded by
+  `function_exists()`. It renders nothing for a post with no score. See
+  [`custom-review-score.md`](./custom-review-score.md).
 
 Visual styling for the carousel *itself* (`.home-carousel`,
 `.home-carousel__slide`, …) lives in the active theme's stylesheet, same

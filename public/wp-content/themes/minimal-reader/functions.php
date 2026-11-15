@@ -17,6 +17,11 @@ function mlr_theme_setup() {
         'flex-width'  => true,
     ));
 
+    // index.php's post-list thumbnail. The theme's own size, not a plugin's
+    // (e.g. custom-post-tabs' mlpt-thumb): the list template must keep a
+    // consistent thumbnail shape whether or not that plugin is active.
+    add_image_size('mlr-list-thumb', 320, 200, true);
+
     register_nav_menus(array(
         'primary' => __('Primary Menu', 'minimal-reader'),
         'footer'  => __('Footer Menu', 'minimal-reader'),

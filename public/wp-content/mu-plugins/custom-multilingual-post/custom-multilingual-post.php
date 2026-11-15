@@ -17,3 +17,5 @@ require_once MLP_PATH . '/admin/editor-panel.php';
 
 /** FRONTEND */
 require_once MLP_PATH . '/frontend/language-switcher.php';
+require_once MLP_PATH . '/frontend/language-picker.php';
+require_once MLP_PATH . '/frontend/shared-comments.php';
