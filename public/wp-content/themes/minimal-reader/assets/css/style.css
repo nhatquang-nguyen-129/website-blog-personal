@@ -36,8 +36,7 @@
 
   /* Review score bands (custom-review-score's .mlrs-tier--*). Excellent is
      a deep red rather than the burnt-orange --primary, so a score badge
-     never reads as the same element as the carousel's orange "Featured"
-     label beside it. */
+     never reads as just another piece of the site's orange accent. */
   --mlrs-excellent: oklch(55% 0.21 25deg);
   --mlrs-good: oklch(58% 0.15 150deg);
   --mlrs-mixed: oklch(76% 0.15 80deg);
@@ -1051,23 +1050,11 @@ a {
   }
 }
 
-.home-carousel__label {
-  display: inline-block;
-  margin-bottom: 0.5rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: calc(var(--radius) + 4px);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .home-carousel__title {
-  /* Capped at two lines on phones so a long title can't climb up into the
-     score badge in the top-left corner. */
+  /* Two lines at most, at every size: the title sits at the bottom and the
+     score badge is pinned to the top-left corner, so a longer title would
+     climb into it — on a short desktop slide (~275px tall when the
+     carousel isn't full-bleed) as much as on a phone. */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1080,14 +1067,7 @@ a {
 }
 
 @media (min-width: 48rem) {
-  .home-carousel__label {
-    margin-bottom: 0.75rem;
-  }
-
   .home-carousel__title {
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
     font-size: 2.25rem;
   }
 }
@@ -1946,26 +1926,28 @@ ul.wp-block-categories a:hover {
    place the badge is shown. */
 .home-carousel__slide .mlrs-badge {
   position: absolute;
-  /* Same left edge as the overlay's label and title (its 1.25rem padding),
-     so badge, "Featured" and title line up in one column. */
+  /* Same left edge as the title below (the overlay's padding), so badge
+     and title line up in one column. */
   top: 1rem;
   left: 1.25rem;
   z-index: 3;
   max-width: calc(100% - 2.5rem);
-  /* Same stacked sticker as desktop, scaled down: about 50px tall on a
-     phone (label ~9px, score ~26px), which clears the "Featured" label
-     below it with room to spare on a 16:9 slide, since the title there is
-     capped at two lines. */
+  /* About 50px tall on a phone (label ~9px, score ~26px): clear of the
+     title, which is capped at two lines, on a 16:9 slide. */
   font-size: 0.875rem;
   pointer-events: none;
 }
 
+/* Desktop: sized for the shortest slide it has to fit — 32:9 at ~980px
+   wide, ~275px tall, when the carousel isn't full-bleed. There the badge
+   ends ~105px from the top and a two-line title starts ~135px down, so
+   they never touch. */
 @media (min-width: 48rem) {
   .home-carousel__slide .mlrs-badge {
-    top: 2rem;
-    left: 1.75rem;
-    max-width: calc(100% - 3.5rem);
-    font-size: 1.75rem;
+    top: 1.5rem;
+    left: 3rem;
+    max-width: calc(100% - 6rem);
+    font-size: 1.5rem;
   }
 }
 

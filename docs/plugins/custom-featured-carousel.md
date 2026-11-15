@@ -105,13 +105,21 @@ move restarts the autoplay clock so the next auto-advance doesn't land a
 moment later:
 
 - **Arrows** (‹ ›) on either side of the carousel. Hidden on phones
-  (below 48rem), where they'd sit on top of the label/title and swiping is
+  (below 48rem), where they'd sit on top of the title and swiping is
   the natural gesture anyway. The dots stay.
 - **Dots** below it, one per slide.
 - **Two-finger trackpad swipe** (macOS and similar) — detected as a `wheel`
   event whose `deltaX` dominates `deltaY`.
 - **Touch swipe** on phones/tablets (`touchstart`/`touchend`, ~40px
   threshold).
+
+## Slide text
+
+Each slide shows only the post's title, bottom-left, capped at two lines
+at every screen size. There's no "Featured" label: every slide in this
+block is hand-picked anyway, and the top-left corner belongs to the
+review-score badge (for posts that have a score), which a longer title or
+an extra label would otherwise run into on a short slide.
 
 ## How it works
 
