@@ -84,7 +84,6 @@ if (!$posts) {
                         </picture>
                     <?php endif; ?>
                     <span class="home-carousel__overlay">
-                        <span class="home-carousel__label"><?php esc_html_e('Featured', 'featured-carousel'); ?></span>
                         <span class="home-carousel__title"><?php echo esc_html(get_the_title($p)); ?></span>
                     </span>
                 </a>

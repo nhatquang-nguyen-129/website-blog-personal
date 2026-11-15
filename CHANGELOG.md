@@ -17,6 +17,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and ver
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-15
+
+### Changed
+- Featured Carousel: removed the orange "Featured" label from every slide. On production's desktop carousel (not full-bleed, so the 32:9 slide is only ~275px tall) the label sat right under the review-score badge, which covered it. Every slide in the block is hand-picked anyway, so the label added nothing. The title is now capped at two lines on desktop too (phones already were), and the desktop badge is slightly smaller and aligned with the title's left edge, so badge and title can't meet even on that short slide.
+
 ## [1.1.0] - 2026-11-15
 
 ### Added
