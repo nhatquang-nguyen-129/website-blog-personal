@@ -82,6 +82,47 @@ function mlp_get_original_post($group) {
 }
 
 /**
+ * Public lists show only a group's original (translations are hidden from
+ * them), so an original that stops being published — unpublished, trashed
+ * or deleted — would take its still-published translations off every list
+ * with it, reachable only by direct link. Hand the "original" flag to the
+ * next published post in the group instead. Only that flag moves: each
+ * post's own content is untouched, since every language is written and
+ * edited by hand. A demoted original that's later republished stays a
+ * translation of the new original.
+ */
+add_action('transition_post_status', 'mlp_promote_on_unpublish', 10, 3);
+function mlp_promote_on_unpublish($new_status, $old_status, $post) {
+    if ($old_status === 'publish' && $new_status !== 'publish') {
+        mlp_hand_over_original($post->ID);
+    }
+}
+
+// Permanent deletion of a published post doesn't change its status first.
+add_action('before_delete_post', 'mlp_promote_on_delete');
+function mlp_promote_on_delete($post_id) {
+    if (get_post_status($post_id) === 'publish') {
+        mlp_hand_over_original($post_id);
+    }
+}
+
+function mlp_hand_over_original($post_id) {
+    if (!get_post_meta($post_id, '_ml_is_original', true)) {
+        return;
+    }
+
+    $group = get_post_meta($post_id, '_ml_group', true);
+    foreach (mlp_get_group_posts($group, 'publish') as $sibling) {
+        if ((int) $sibling->ID === (int) $post_id) {
+            continue;
+        }
+        update_post_meta($post_id, '_ml_is_original', 0);
+        update_post_meta($sibling->ID, '_ml_is_original', 1);
+        return;
+    }
+}
+
+/**
  * A post's language code, falling back to the site default if never set.
  */
 function mlp_get_post_lang($post_id) {

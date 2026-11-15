@@ -6,6 +6,9 @@ if (!defined('ABSPATH')) {
 /**
  * Central place to add/remove supported languages. Filterable so a future
  * feature/theme can extend the list without editing this file.
+ *
+ * Write each label in the language itself ('Deutsch', not 'German'): it's
+ * what a reader looks for in the post's language picker.
  */
 function mlp_available_langs() {
     return apply_filters('mlp_available_langs', array(

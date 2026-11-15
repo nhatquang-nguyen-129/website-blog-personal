@@ -4,9 +4,10 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * [language_switcher] — a same-URL language toggle. Every link points back
- * at the group's one canonical (original) permalink, only the ?lang= query
- * arg changes; see core/language-resolver.php for how that arg swaps content.
+ * [language_switcher] — a same-URL language toggle. Every link points at the
+ * group's original permalink: plain for the original's own language, +
+ * ?lang=xx for the others (mlp_lang_url()); see core/language-resolver.php
+ * for how that arg swaps content.
  */
 add_shortcode('language_switcher', 'mlp_language_switcher');
 function mlp_language_switcher() {
@@ -35,7 +36,7 @@ function mlp_language_switcher() {
     $out = '<div class="mlp-language-switcher">';
     foreach ($siblings as $p) {
         $lang   = mlp_get_post_lang($p->ID);
-        $url    = add_query_arg('lang', $lang, get_permalink($original->ID));
+        $url    = mlp_lang_url($original, $lang);
         $active = $lang === $current_lang;
 
         $out .= '<a href="' . esc_url($url) . '"';
